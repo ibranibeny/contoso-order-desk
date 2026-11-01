@@ -146,7 +146,7 @@ Run the whole show (section 4) with the approver. Time each act. Record one full
 |---|---|
 | Day before | `scripts/reset-demo.sh`; redeploy the starting point (**Actions → CI/CD → Run workflow** on main, approver approves); update VS Code and Copilot |
 | At least 60 minutes before | `scripts/prepare-security-prs.sh`: opens the two security pull requests so CodeQL and dependency review finish in time |
-| 30 minutes before, and again in the break | `scripts/preflight.sh`: checks workflows, ruleset, environment, secrets, last runs, the security pull requests and the web app |
+| 30 minutes before, and again in the break | `scripts/preflight.sh`: checks workflows, ruleset, environment, secrets, last runs, the security pull requests and the web app's `/health`. With the Azure CLI signed in (`az login`, or Cloud Shell) it also finds and checks the Azure side by itself: web app settings, basic authentication off, Application Insights, the identity's role and its federated credential |
 | 15 minutes before | Open the tabs: repository, project board, Actions, Settings → Rules → Rulesets, Security tab, Azure portal (web app), the web app. VS Code: font size 18+, `npm ci` done, terminal open in the repository, Agent and Plan modes visible, notifications off |
 
 ---
