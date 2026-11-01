@@ -138,7 +138,8 @@ else
   # other enabled subscriptions searched, up to MAX_SUBS of them, 6 at a time. An az profile can hold many accounts and
   # tenants (one with 85 subscriptions took minutes per batch), so they are not searched while the answer is at hand.
   MAX_SUBS=30
-  SUBMAP=$(azf account list --query "[?state=='Enabled'].[id, name]")
+  LIST_FAILED=''
+  SUBMAP=$(azf account list --query "[?state=='Enabled'].[id, name]") || { SUBMAP=''; LIST_FAILED=1; }
   sub_name() { printf '%s\n' "$SUBMAP" | awk -F$'\037' -v id="$1" '$1 == id { print $2; exit }'; }
   ALL_OTHER=$(printf '%s\n' "$SUBMAP" | cut -d$'\037' -f1 | grep . | grep -v -x -F "$CUR_SUB")
   N_OTHER=$(printf '%s' "$ALL_OTHER" | grep -c .)
@@ -164,6 +165,8 @@ else
   FOUND=$(cat "$SEARCH_DIR"/*.out 2>/dev/null | grep .)
   FAILED=''
   for s in $SUBS; do [ "$(cat "$SEARCH_DIR/$s.rc" 2>/dev/null)" = "0" ] || FAILED="$FAILED, $(sub_name "$s")"; done
+  # Without the subscription list the others were never searched: not finding the web app is then not "not found".
+  [ -n "$FOUND" ] || [ -z "$LIST_FAILED" ] || FAILED="$FAILED, your other subscriptions (az account list failed)"
   [ -z "$FAILED" ] || warn "Could not search subscription(s) ${FAILED#, } (permissions or network): the result below may be incomplete"
   N_APPS=$(printf '%s' "$FOUND" | grep -c .); AMBIGUOUS=''
 
@@ -180,7 +183,7 @@ else
   else
     IFS=$'\037' read -r SUB RG FOUND_APP <<< "$FOUND"
     [ -n "$APP" ] || { APP=$FOUND_APP; info "Found through the resource group tag workload=contoso-order-desk"; }
-    SUB_NAME=$(sub_name "$SUB")
+    SUB_NAME=$(sub_name "$SUB"); SUB_NAME=${SUB_NAME:-$SUB}
     [ "$SUB" = "$CUR_SUB" ] || warn "The web app is in subscription $SUB_NAME, not your current one: checked there. Run az account set --subscription \"$SUB\" before any scripts/azure-setup.sh fix below"
     AZA=(--subscription "$SUB" -g "$RG" -n "$APP")
 
