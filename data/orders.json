@@ -2,9 +2,9 @@
   {
     "id": "ORD-100200",
     "status": "Delivered",
-    "placedAt": "2026-10-31T20:09:00Z",
-    "lastUpdated": "2026-11-03T18:59:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-11-02T20:09:00Z",
+    "lastUpdated": "2026-11-05T18:59:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "marketplace",
     "customer": {
       "name": "Wulan Pratama",
@@ -52,9 +52,9 @@
   {
     "id": "ORD-100201",
     "status": "Out for delivery",
-    "placedAt": "2026-10-31T16:28:00Z",
-    "lastUpdated": "2026-11-03T18:43:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-11-02T16:28:00Z",
+    "lastUpdated": "2026-11-05T18:43:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "web",
     "customer": {
       "name": "Fajar Gunawan",
@@ -96,9 +96,9 @@
   {
     "id": "ORD-100202",
     "status": "Delivered",
-    "placedAt": "2026-10-24T12:14:00Z",
-    "lastUpdated": "2026-10-27T16:57:00Z",
-    "estimatedDelivery": "2026-10-27",
+    "placedAt": "2026-10-26T12:14:00Z",
+    "lastUpdated": "2026-10-29T16:57:00Z",
+    "estimatedDelivery": "2026-10-29",
     "channel": "web",
     "customer": {
       "name": "Eka Tanjung",
@@ -146,9 +146,9 @@
   {
     "id": "ORD-100204",
     "status": "Out for delivery",
-    "placedAt": "2026-10-31T16:02:00Z",
-    "lastUpdated": "2026-11-03T14:28:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-11-02T16:02:00Z",
+    "lastUpdated": "2026-11-05T14:28:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "web",
     "customer": {
       "name": "Tomas Hidayat",
@@ -184,8 +184,8 @@
   {
     "id": "ORD-100205",
     "status": "Cancelled",
-    "placedAt": "2026-10-31T12:21:00Z",
-    "lastUpdated": "2026-11-02T17:23:00Z",
+    "placedAt": "2026-11-02T12:21:00Z",
+    "lastUpdated": "2026-11-04T17:23:00Z",
     "estimatedDelivery": null,
     "channel": "marketplace",
     "customer": {
@@ -234,9 +234,9 @@
   {
     "id": "ORD-100208",
     "status": "Out for delivery",
-    "placedAt": "2026-10-28T10:32:00Z",
-    "lastUpdated": "2026-11-03T09:37:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-10-30T10:32:00Z",
+    "lastUpdated": "2026-11-05T09:37:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "app",
     "customer": {
       "name": "Sari Tanjung",
@@ -284,8 +284,8 @@
   {
     "id": "ORD-100209",
     "status": "Cancelled",
-    "placedAt": "2026-10-25T10:46:00Z",
-    "lastUpdated": "2026-10-27T08:37:00Z",
+    "placedAt": "2026-10-27T10:46:00Z",
+    "lastUpdated": "2026-10-29T08:37:00Z",
     "estimatedDelivery": null,
     "channel": "web",
     "customer": {
@@ -328,9 +328,9 @@
   {
     "id": "ORD-100215",
     "status": "Shipped",
-    "placedAt": "2026-10-25T21:22:00Z",
-    "lastUpdated": "2026-10-29T19:30:00Z",
-    "estimatedDelivery": "2026-11-04",
+    "placedAt": "2026-10-27T21:22:00Z",
+    "lastUpdated": "2026-10-31T19:30:00Z",
+    "estimatedDelivery": "2026-11-06",
     "channel": "web",
     "customer": {
       "name": "Gita Siregar",
@@ -378,8 +378,8 @@
   {
     "id": "ORD-100219",
     "status": "Cancelled",
-    "placedAt": "2026-10-31T07:34:00Z",
-    "lastUpdated": "2026-11-01T07:32:00Z",
+    "placedAt": "2026-11-02T07:34:00Z",
+    "lastUpdated": "2026-11-03T07:32:00Z",
     "estimatedDelivery": null,
     "channel": "web",
     "customer": {
@@ -416,9 +416,9 @@
   {
     "id": "ORD-100221",
     "status": "Shipped",
-    "placedAt": "2026-10-26T17:05:00Z",
-    "lastUpdated": "2026-10-29T09:03:00Z",
-    "estimatedDelivery": "2026-11-04",
+    "placedAt": "2026-10-28T17:05:00Z",
+    "lastUpdated": "2026-10-31T09:03:00Z",
+    "estimatedDelivery": "2026-11-06",
     "channel": "marketplace",
     "customer": {
       "name": "Lukas Lestari",
@@ -466,8 +466,8 @@
   {
     "id": "ORD-100222",
     "status": "Cancelled",
-    "placedAt": "2026-10-27T08:59:00Z",
-    "lastUpdated": "2026-10-30T11:54:00Z",
+    "placedAt": "2026-10-29T08:59:00Z",
+    "lastUpdated": "2026-11-01T11:54:00Z",
     "estimatedDelivery": null,
     "channel": "app",
     "customer": {
@@ -504,9 +504,9 @@
   {
     "id": "ORD-100227",
     "status": "Delivered",
-    "placedAt": "2026-10-28T20:53:00Z",
-    "lastUpdated": "2026-11-01T11:21:00Z",
-    "estimatedDelivery": "2026-11-01",
+    "placedAt": "2026-10-30T20:53:00Z",
+    "lastUpdated": "2026-11-03T11:21:00Z",
+    "estimatedDelivery": "2026-11-03",
     "channel": "app",
     "customer": {
       "name": "Wulan Siregar",
@@ -542,9 +542,9 @@
   {
     "id": "ORD-100231",
     "status": "Packed",
-    "placedAt": "2026-11-01T03:12:00Z",
-    "lastUpdated": "2026-11-02T08:15:00Z",
-    "estimatedDelivery": "2026-11-05",
+    "placedAt": "2026-11-03T03:12:00Z",
+    "lastUpdated": "2026-11-04T08:15:00Z",
+    "estimatedDelivery": "2026-11-07",
     "channel": "web",
     "customer": {
       "name": "Eka Tanjung",
@@ -586,9 +586,9 @@
   {
     "id": "ORD-100232",
     "status": "Out for delivery",
-    "placedAt": "2026-10-31T14:02:00Z",
-    "lastUpdated": "2026-11-03T06:40:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-11-02T14:02:00Z",
+    "lastUpdated": "2026-11-05T06:40:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "app",
     "customer": {
       "name": "Tomas Kusuma",
@@ -630,9 +630,9 @@
   {
     "id": "ORD-100233",
     "status": "Delivered",
-    "placedAt": "2026-10-28T09:48:00Z",
-    "lastUpdated": "2026-11-01T12:05:00Z",
-    "estimatedDelivery": "2026-11-01",
+    "placedAt": "2026-10-30T09:48:00Z",
+    "lastUpdated": "2026-11-03T12:05:00Z",
+    "estimatedDelivery": "2026-11-03",
     "channel": "web",
     "customer": {
       "name": "Gita Siregar",
@@ -680,8 +680,8 @@
   {
     "id": "ORD-100234",
     "status": "Payment pending",
-    "placedAt": "2026-11-03T09:21:00Z",
-    "lastUpdated": "2026-11-03T09:30:00Z",
+    "placedAt": "2026-11-05T09:21:00Z",
+    "lastUpdated": "2026-11-05T09:30:00Z",
     "estimatedDelivery": null,
     "channel": "marketplace",
     "customer": {
@@ -730,9 +730,9 @@
   {
     "id": "ORD-100236",
     "status": "Delivered",
-    "placedAt": "2026-10-31T07:14:00Z",
-    "lastUpdated": "2026-11-02T18:43:00Z",
-    "estimatedDelivery": "2026-11-02",
+    "placedAt": "2026-11-02T07:14:00Z",
+    "lastUpdated": "2026-11-04T18:43:00Z",
+    "estimatedDelivery": "2026-11-04",
     "channel": "web",
     "customer": {
       "name": "Wulan Nugroho",
@@ -768,9 +768,9 @@
   {
     "id": "ORD-100237",
     "status": "Out for delivery",
-    "placedAt": "2026-10-24T17:47:00Z",
-    "lastUpdated": "2026-11-03T11:38:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-10-26T17:47:00Z",
+    "lastUpdated": "2026-11-05T11:38:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "web",
     "customer": {
       "name": "Rizky Gunawan",
@@ -806,9 +806,9 @@
   {
     "id": "ORD-100238",
     "status": "Out for delivery",
-    "placedAt": "2026-10-31T08:29:00Z",
-    "lastUpdated": "2026-11-03T14:18:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-11-02T08:29:00Z",
+    "lastUpdated": "2026-11-05T14:18:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "marketplace",
     "customer": {
       "name": "Fajar Hidayat",
@@ -850,9 +850,9 @@
   {
     "id": "ORD-100239",
     "status": "Delivered",
-    "placedAt": "2026-10-30T20:55:00Z",
-    "lastUpdated": "2026-11-01T11:07:00Z",
-    "estimatedDelivery": "2026-11-01",
+    "placedAt": "2026-11-01T20:55:00Z",
+    "lastUpdated": "2026-11-03T11:07:00Z",
+    "estimatedDelivery": "2026-11-03",
     "channel": "web",
     "customer": {
       "name": "Hana Lestari",
@@ -900,9 +900,9 @@
   {
     "id": "ORD-100240",
     "status": "Shipped",
-    "placedAt": "2026-10-28T14:45:00Z",
-    "lastUpdated": "2026-11-01T11:31:00Z",
-    "estimatedDelivery": "2026-11-06",
+    "placedAt": "2026-10-30T14:45:00Z",
+    "lastUpdated": "2026-11-03T11:31:00Z",
+    "estimatedDelivery": "2026-11-08",
     "channel": "web",
     "customer": {
       "name": "Gita Tanjung",
@@ -944,9 +944,9 @@
   {
     "id": "ORD-100242",
     "status": "Delivered",
-    "placedAt": "2026-10-27T13:40:00Z",
-    "lastUpdated": "2026-11-02T16:22:00Z",
-    "estimatedDelivery": "2026-11-02",
+    "placedAt": "2026-10-29T13:40:00Z",
+    "lastUpdated": "2026-11-04T16:22:00Z",
+    "estimatedDelivery": "2026-11-04",
     "channel": "web",
     "customer": {
       "name": "Indra Tanjung",
@@ -988,9 +988,9 @@
   {
     "id": "ORD-100243",
     "status": "Delivered",
-    "placedAt": "2026-10-31T16:27:00Z",
-    "lastUpdated": "2026-11-03T19:16:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-11-02T16:27:00Z",
+    "lastUpdated": "2026-11-05T19:16:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "app",
     "customer": {
       "name": "Tomas Tanjung",
@@ -1026,9 +1026,9 @@
   {
     "id": "ORD-100246",
     "status": "Delivered",
-    "placedAt": "2026-10-29T18:02:00Z",
-    "lastUpdated": "2026-11-01T18:30:00Z",
-    "estimatedDelivery": "2026-11-01",
+    "placedAt": "2026-10-31T18:02:00Z",
+    "lastUpdated": "2026-11-03T18:30:00Z",
+    "estimatedDelivery": "2026-11-03",
     "channel": "app",
     "customer": {
       "name": "Kirana Gunawan",
@@ -1070,9 +1070,9 @@
   {
     "id": "ORD-100247",
     "status": "Shipped",
-    "placedAt": "2026-11-01T09:53:00Z",
-    "lastUpdated": "2026-11-03T13:48:00Z",
-    "estimatedDelivery": "2026-11-06",
+    "placedAt": "2026-11-03T09:53:00Z",
+    "lastUpdated": "2026-11-05T13:48:00Z",
+    "estimatedDelivery": "2026-11-08",
     "channel": "marketplace",
     "customer": {
       "name": "Rizky Pratama",
@@ -1108,9 +1108,9 @@
   {
     "id": "ORD-100251",
     "status": "Out for delivery",
-    "placedAt": "2026-10-26T20:01:00Z",
-    "lastUpdated": "2026-11-03T13:06:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-10-28T20:01:00Z",
+    "lastUpdated": "2026-11-05T13:06:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "app",
     "customer": {
       "name": "Indra Wijaya",
@@ -1152,9 +1152,9 @@
   {
     "id": "ORD-100253",
     "status": "Delivered",
-    "placedAt": "2026-10-28T11:19:00Z",
-    "lastUpdated": "2026-11-02T18:26:00Z",
-    "estimatedDelivery": "2026-11-02",
+    "placedAt": "2026-10-30T11:19:00Z",
+    "lastUpdated": "2026-11-04T18:26:00Z",
+    "estimatedDelivery": "2026-11-04",
     "channel": "web",
     "customer": {
       "name": "Hana Tanjung",
@@ -1190,8 +1190,8 @@
   {
     "id": "ORD-100259",
     "status": "Cancelled",
-    "placedAt": "2026-10-24T14:30:00Z",
-    "lastUpdated": "2026-10-25T13:55:00Z",
+    "placedAt": "2026-10-26T14:30:00Z",
+    "lastUpdated": "2026-10-27T13:55:00Z",
     "estimatedDelivery": null,
     "channel": "web",
     "customer": {
@@ -1228,9 +1228,9 @@
   {
     "id": "ORD-100260",
     "status": "Shipped",
-    "placedAt": "2026-11-01T11:40:00Z",
-    "lastUpdated": "2026-11-03T19:41:00Z",
-    "estimatedDelivery": "2026-11-05",
+    "placedAt": "2026-11-03T11:40:00Z",
+    "lastUpdated": "2026-11-05T19:41:00Z",
+    "estimatedDelivery": "2026-11-07",
     "channel": "marketplace",
     "customer": {
       "name": "Kirana Gunawan",
@@ -1272,9 +1272,9 @@
   {
     "id": "ORD-100263",
     "status": "Out for delivery",
-    "placedAt": "2026-10-24T11:39:00Z",
-    "lastUpdated": "2026-11-03T11:51:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-10-26T11:39:00Z",
+    "lastUpdated": "2026-11-05T11:51:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "web",
     "customer": {
       "name": "Eka Wijaya",
@@ -1322,9 +1322,9 @@
   {
     "id": "ORD-100273",
     "status": "Delivered",
-    "placedAt": "2026-10-31T21:07:00Z",
-    "lastUpdated": "2026-11-03T06:54:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-11-02T21:07:00Z",
+    "lastUpdated": "2026-11-05T06:54:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "web",
     "customer": {
       "name": "Budi Siregar",
@@ -1366,9 +1366,9 @@
   {
     "id": "ORD-100274",
     "status": "Shipped",
-    "placedAt": "2026-10-30T13:36:00Z",
-    "lastUpdated": "2026-10-31T07:27:00Z",
-    "estimatedDelivery": "2026-11-04",
+    "placedAt": "2026-11-01T13:36:00Z",
+    "lastUpdated": "2026-11-02T07:27:00Z",
+    "estimatedDelivery": "2026-11-06",
     "channel": "app",
     "customer": {
       "name": "Tomas Wijaya",
@@ -1416,9 +1416,9 @@
   {
     "id": "ORD-100278",
     "status": "Packed",
-    "placedAt": "2026-10-26T06:06:00Z",
-    "lastUpdated": "2026-10-28T07:00:00Z",
-    "estimatedDelivery": "2026-11-07",
+    "placedAt": "2026-10-28T06:06:00Z",
+    "lastUpdated": "2026-10-30T07:00:00Z",
+    "estimatedDelivery": "2026-11-09",
     "channel": "marketplace",
     "customer": {
       "name": "Wulan Pratama",
@@ -1460,9 +1460,9 @@
   {
     "id": "ORD-100283",
     "status": "Delivered",
-    "placedAt": "2026-10-31T09:16:00Z",
-    "lastUpdated": "2026-11-02T08:09:00Z",
-    "estimatedDelivery": "2026-11-02",
+    "placedAt": "2026-11-02T09:16:00Z",
+    "lastUpdated": "2026-11-04T08:09:00Z",
+    "estimatedDelivery": "2026-11-04",
     "channel": "marketplace",
     "customer": {
       "name": "Hana Hidayat",
@@ -1510,9 +1510,9 @@
   {
     "id": "ORD-100284",
     "status": "Delivered",
-    "placedAt": "2026-10-26T10:56:00Z",
-    "lastUpdated": "2026-10-28T11:36:00Z",
-    "estimatedDelivery": "2026-10-28",
+    "placedAt": "2026-10-28T10:56:00Z",
+    "lastUpdated": "2026-10-30T11:36:00Z",
+    "estimatedDelivery": "2026-10-30",
     "channel": "app",
     "customer": {
       "name": "Fajar Gunawan",
@@ -1554,9 +1554,9 @@
   {
     "id": "ORD-100286",
     "status": "Delivered",
-    "placedAt": "2026-10-27T13:23:00Z",
-    "lastUpdated": "2026-11-01T17:03:00Z",
-    "estimatedDelivery": "2026-11-01",
+    "placedAt": "2026-10-29T13:23:00Z",
+    "lastUpdated": "2026-11-03T17:03:00Z",
+    "estimatedDelivery": "2026-11-03",
     "channel": "web",
     "customer": {
       "name": "Wulan Siregar",
@@ -1604,8 +1604,8 @@
   {
     "id": "ORD-100289",
     "status": "Payment pending",
-    "placedAt": "2026-11-02T15:55:00Z",
-    "lastUpdated": "2026-11-02T18:24:00Z",
+    "placedAt": "2026-11-04T15:55:00Z",
+    "lastUpdated": "2026-11-04T18:24:00Z",
     "estimatedDelivery": null,
     "channel": "web",
     "customer": {
@@ -1642,9 +1642,9 @@
   {
     "id": "ORD-100291",
     "status": "Shipped",
-    "placedAt": "2026-10-29T17:06:00Z",
-    "lastUpdated": "2026-10-30T15:23:00Z",
-    "estimatedDelivery": "2026-11-05",
+    "placedAt": "2026-10-31T17:06:00Z",
+    "lastUpdated": "2026-11-01T15:23:00Z",
+    "estimatedDelivery": "2026-11-07",
     "channel": "marketplace",
     "customer": {
       "name": "Putri Pratama",
@@ -1686,9 +1686,9 @@
   {
     "id": "ORD-100295",
     "status": "Packed",
-    "placedAt": "2026-11-01T12:36:00Z",
-    "lastUpdated": "2026-11-02T07:49:00Z",
-    "estimatedDelivery": "2026-11-05",
+    "placedAt": "2026-11-03T12:36:00Z",
+    "lastUpdated": "2026-11-04T07:49:00Z",
+    "estimatedDelivery": "2026-11-07",
     "channel": "web",
     "customer": {
       "name": "Rizky Siregar",
@@ -1724,9 +1724,9 @@
   {
     "id": "ORD-100298",
     "status": "Out for delivery",
-    "placedAt": "2026-10-28T14:21:00Z",
-    "lastUpdated": "2026-11-03T14:15:00Z",
-    "estimatedDelivery": "2026-11-03",
+    "placedAt": "2026-10-30T14:21:00Z",
+    "lastUpdated": "2026-11-05T14:15:00Z",
+    "estimatedDelivery": "2026-11-05",
     "channel": "marketplace",
     "customer": {
       "name": "Kirana Pratama",

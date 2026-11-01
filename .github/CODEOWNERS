@@ -1,9 +1,5 @@
-# Code owners for Contoso Order Desk.
-# scripts/configure-repo.sh replaces this file with your approver. The result looks like:
-#
-#   *                     @your-approver
-#   /.github/             @your-approver
-#   /.github/CODEOWNERS   @your-approver
-#
-# In a personal repository, owners must be users with write access.
-# In an organization you can name a team instead, for example @contoso/order-desk-maintainers.
+# Code owners for Contoso Order Desk (written by scripts/github-setup.sh).
+# Every pull request to main needs a review from a code owner (see the "Protect main" ruleset).
+*                     @ibranibeny
+/.github/             @ibranibeny
+/.github/CODEOWNERS   @ibranibeny
