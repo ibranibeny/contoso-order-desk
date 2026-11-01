@@ -20,7 +20,7 @@ app.get('/orders/lookup', (req, res) => {
   const id = req.query.id;
   const order = orders.find((o) => o.id === id);
   if (!order) {
-    return res.send(`<p>No order found for ${id}</p>`);
+    return res.status(404).json({ error: 'Order not found' });
   }
   res.json(order);
 });
