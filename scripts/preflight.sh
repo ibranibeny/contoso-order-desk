@@ -7,8 +7,8 @@
 # is nothing to pass: the web app named in the AZURE_WEBAPP_NAME variable (or the resource group that azure-setup.sh
 # tags workload=contoso-order-desk), its subscription (the current one first, then the others you can see), resource
 # group, plan, host name, and the identity GitHub Actions signs in as. Without the Azure CLI it only checks /health.
-# GitHub never shows secret values, so the latest production deployment is the evidence that AZURE_CLIENT_ID and the
-# federated credential work together.
+# GitHub never shows secret values: the script lists every identity that can deploy and every credential it trusts, and
+# reports the latest production deployment, which shows that sign-in worked at that time.
 #
 #   scripts/preflight.sh
 #   WEBAPP_URL=https://<custom-domain> scripts/preflight.sh   # check a custom domain instead of the default host name
@@ -98,16 +98,17 @@ HOST=''
 is_true() { case "$1" in true|True|TRUE) return 0 ;; *) return 1 ;; esac; }
 azq() { az "$@" 2>/dev/null | tr -d '\r'; }
 # Rows of fields split on \037, so empty values keep their place. The Azure CLI prints a flat list one value per line
-# and a list of lists one row per line, so row queries are written [[a, b]] (one object) or [0:1].[a, b] / [].[a, b].
+# and a list of lists one row per line, so row queries are written [[a, b]] (one object) or [].[a, b] (lists).
 azf() { azq "$@" -o tsv | tr '\t' '\037'; }
 none() { [ "$1" = "None" ] && echo '' || echo "$1"; }   # the Azure CLI prints a missing value inside a row as None
-find_app() { # subscription -> "resource-group<US>web-app"
+aud_ok() { [[ ",$1," == *",api://AzureADTokenExchange,"* ]]; }
+find_apps() { # subscription -> one "resource-group<US>web-app" row per candidate
   local rg
   if [ -n "$APP" ]; then
-    azf resource list --subscription "$1" --resource-type Microsoft.Web/sites --name "$APP" --query "[0:1].[resourceGroup, name]"
+    azf resource list --subscription "$1" --resource-type Microsoft.Web/sites --name "$APP" --query "[].[resourceGroup, name]"
   else
     for rg in $(azq group list --subscription "$1" --tag workload=contoso-order-desk --query "[].name" -o tsv); do
-      azf webapp list --subscription "$1" -g "$rg" --query "[0:1].[resourceGroup, name]" | grep . && return 0
+      azf webapp list --subscription "$1" -g "$rg" --query "[].[resourceGroup, name]"
     done
   fi
 }
@@ -127,19 +128,23 @@ else
   CUR_SUB=$(azq account show --query id -o tsv)
   info "Signed in to Azure as $(azq account show --query user.name -o tsv) · current subscription $(azq account show --query name -o tsv)"
   SUB=$CUR_SUB
-  FOUND=$(find_app "$SUB")
+  FOUND=$(find_apps "$SUB")
   if [ -z "$FOUND" ]; then
     OTHER_SUBS=$(azq account list --query "[?state=='Enabled' && id!='$CUR_SUB'].id" -o tsv)
     [ -z "$OTHER_SUBS" ] || info "Not in the current subscription; looking in $(printf '%s\n' "$OTHER_SUBS" | grep -c .) other enabled subscription(s)"
     for s in $OTHER_SUBS; do
-      FOUND=$(find_app "$s")
+      FOUND=$(find_apps "$s")
       if [ -n "$FOUND" ]; then SUB=$s; break; fi
     done
   fi
+  N_APPS=$(printf '%s' "$FOUND" | grep -c .); AMBIGUOUS=''
 
   if [ -z "$FOUND" ]; then
     if [ -n "$APP" ]; then bad "Web app $APP not found in any subscription you can see -> az login with the account that ran scripts/azure-setup.sh"
     else bad "No web app found (no AZURE_WEBAPP_NAME variable, no resource group tagged workload=contoso-order-desk) -> scripts/azure-setup.sh"; fi
+  elif [ "$N_APPS" != "1" ]; then
+    AMBIGUOUS=1
+    bad "$N_APPS web apps match:$(printf '%s' "$FOUND" | awk -F$'\037' '{printf "%s %s (resource group %s)", (NR>1?",":""), $2, $1}'). Not checking a guess -> set the AZURE_WEBAPP_NAME variable to the demo web app (scripts/azure-setup.sh sets it)"
   else
     IFS=$'\037' read -r RG FOUND_APP <<< "$FOUND"
     [ -n "$APP" ] || { APP=$FOUND_APP; info "Found through the resource group tag workload=contoso-order-desk"; }
@@ -166,7 +171,8 @@ else
       case "$TLS" in 1.2|1.3) ;; *) PROBLEMS="$PROBLEMS minimum TLS ${TLS:-unknown};" ;; esac
       [ "$FTPS" = "Disabled" ] || PROBLEMS="$PROBLEMS FTP state ${FTPS:-unknown};"
       [ "$HC" = "/health" ] || PROBLEMS="$PROBLEMS health check path ${HC:-not set};"
-      [[ "$FX" == NODE* ]] || PROBLEMS="$PROBLEMS runtime ${FX:-unknown};"
+      # azure-setup.sh creates Node.js 24 (NODE|24-lts), or Node.js 22 where 24 is not offered.
+      case "$FX" in NODE\|24*|NODE\|22*|node\|24*|node\|22*) ;; *) PROBLEMS="$PROBLEMS runtime ${FX:-unknown}, the app needs Node.js 24 or 22;" ;; esac
       if [ -z "$PROBLEMS" ]; then ok "Running, HTTPS only, TLS $TLS+, FTP off, $FX, health check $HC"
       else bad "Web app settings:${PROBLEMS%;} -> scripts/azure-setup.sh (safe to run again)"; fi
 
@@ -180,75 +186,97 @@ else
       elif [ -n "$UNKNOWN" ]; then warn "Could not read the basic authentication setting for:$UNKNOWN"
       else ok "Basic authentication off (scm and ftp): deployments sign in with Microsoft Entra ID"; fi
 
-      AI=$(azq webapp config appsettings list "${AZA[@]}" --query "[?name=='APPLICATIONINSIGHTS_CONNECTION_STRING'] | length(@)" -o tsv)
-      case "$AI" in
-        1) ok "Application Insights connected" ;;
-        0) warn "Application Insights not connected (optional) -> APPINSIGHTS=1 scripts/azure-setup.sh" ;;
-        *) warn "Could not read the app settings to check Application Insights (needs Contributor or Website Contributor on the web app)" ;;
-      esac
+      # Application Insights as azure-setup.sh configures it: a non-empty connection string and auto-instrumentation (~3).
+      # Values are tested inside the query and never printed, except the agent version.
+      IFS=$'\037' read -r AI_CS AI_AGENT <<< "$(azf webapp config appsettings list "${AZA[@]}" \
+        --query "[[length([?name=='APPLICATIONINSIGHTS_CONNECTION_STRING' && value]), [?name=='ApplicationInsightsAgent_EXTENSION_VERSION'].value | [0]]]")"
+      AI_AGENT=$(none "$AI_AGENT")
+      if [ -z "$AI_CS" ]; then warn "Could not read the app settings to check Application Insights (needs Contributor or Website Contributor on the web app)"
+      elif [ "$AI_CS" = "0" ]; then warn "Application Insights not configured (optional) -> APPINSIGHTS=1 scripts/azure-setup.sh"
+      elif [ -z "$AI_AGENT" ] || [ "$AI_AGENT" = "disabled" ]; then warn "Application Insights connection string set, but auto-instrumentation is off (ApplicationInsightsAgent_EXTENSION_VERSION) -> APPINSIGHTS=1 scripts/azure-setup.sh"
+      else ok "Application Insights configured: connection string set, auto-instrumentation $AI_AGENT (telemetry itself is not checked)"; fi
 
-      # Who can deploy: the managed identities with Website Contributor on this web app.
-      IDS=''; N_SP=0
+      # Who can deploy: managed identities with Website Contributor on this web app. An identity can live in another
+      # subscription, so each principal is looked up in the web app's subscription first, then in the others.
+      IDS=''; N_SP=0; SEARCH=''
       for p in $(azq role assignment list --subscription "$SUB" --scope "$WEBAPP_ID" --role "Website Contributor" --query "[?principalType=='ServicePrincipal'].principalId" -o tsv); do
         N_SP=$((N_SP + 1))
-        row=$(azf identity list --subscription "$SUB" --query "[?principalId=='$p'] | [0:1].[resourceGroup, name, clientId, principalId]")
-        [ -z "$row" ] || IDS="$IDS$row"$'\n'
+        [ -n "$SEARCH" ] || SEARCH="$SUB $(azq account list --query "[?state=='Enabled' && id!='$SUB'].id" -o tsv | tr '\n' ' ')"
+        for s in $SEARCH; do
+          row=$(azf identity list --subscription "$s" --query "[?principalId=='$p'] | [0:1].[resourceGroup, name, clientId, principalId]")
+          if [ -n "$row" ]; then IDS="$IDS$s"$'\037'"$row"$'\n'; break; fi
+        done
       done
       N_IDS=$(printf '%s' "$IDS" | grep -c .)
       if [ "$N_IDS" = "0" ]; then
-        bad "No managed identity in subscription $SUB_NAME has Website Contributor on $APP ($N_SP other service principal(s) have it) -> scripts/azure-setup.sh"
+        bad "No managed identity you can see has Website Contributor on $APP ($N_SP service principal(s) have it) -> scripts/azure-setup.sh"
       else
         if [ "$N_IDS" != "1" ]; then
-          warn "$N_IDS managed identities can deploy to $APP: $(printf '%s' "$IDS" | awk -F$'\037' '{printf "%s%s (client ID %s)", (NR>1?", ":""), $2, $3}'). GitHub does not show the AZURE_CLIENT_ID value: check it is the client ID of the one this repository should use"
+          warn "$N_IDS managed identities can deploy to $APP: $(printf '%s' "$IDS" | awk -F$'\037' '{printf "%s%s (client ID %s)", (NR>1?", ":""), $3, $4}'). GitHub does not show the AZURE_CLIENT_ID value: check it is the client ID of the one this repository should use"
         fi
-        TRUSTED=
-        # The subject GitHub sends (GitHub Docs, OpenID Connect reference): the immutable format for repositories created
-        # after 15 July 2026, and for repositories renamed or transferred after that date.
+        # The subject GitHub sends (GitHub Docs, OpenID Connect reference): a repository created after 15 July 2026 always
+        # sends the immutable format. An older one sends the legacy format, unless it was renamed or transferred after
+        # that date, which the API does not show; then only a deployment tells.
         read -r REPO_ID OWNER_ID CREATED <<< "$(gh api "repos/$REPO" --jq '"\(.id) \(.owner.id) \(.created_at)"')"
         LEGACY="repo:$OWNER/$NAME:environment:production"
         IMMUTABLE="repo:$OWNER@$OWNER_ID/$NAME@$REPO_ID:environment:production"
-        if [[ "$CREATED" > "2026-07-16" ]]; then WANT=$IMMUTABLE; WFMT=immutable; ALT=$LEGACY; AFMT=legacy
-        else WANT=$LEGACY; WFMT=legacy; ALT=$IMMUTABLE; AFMT=immutable; fi
+        NEW_REPO=0; [[ "$CREATED" > "2026-07-16" ]] && NEW_REPO=1
         GH_ISSUER=https://token.actions.githubusercontent.com
-        while IFS=$'\037' read -r IRG IDENTITY CLIENT PRINCIPAL; do
+        # With one identity a problem is ✗. With several, a problem on one is ! and ✗ only if none can sign in.
+        report() { # level message
+          case "$1" in
+            ok) ok "$2" ;;
+            maybe) warn "$2" ;;
+            bad) if [ "$N_IDS" = "1" ]; then bad "$2"; else warn "$2"; fi ;;
+          esac
+        }
+        USABLE=''
+        while IFS=$'\037' read -r ISUB IRG IDENTITY CLIENT PRINCIPAL; do
           [ -n "$IDENTITY" ] || continue
-          N=$(azq role assignment list --subscription "$SUB" --assignee "$PRINCIPAL" --all --query "length(@)" -o tsv)
-          if [ "${N:-0}" = "1" ]; then ok "Identity $IDENTITY (client ID $CLIENT): Website Contributor on this web app, no other role in subscription $SUB_NAME (other subscriptions not checked)"
+          [ "$ISUB" = "$SUB" ] || info "Identity $IDENTITY is in subscription $(azq account show --subscription "$ISUB" --query name -o tsv)"
+          N=$(azq role assignment list --subscription "$SUB" --assignee "$PRINCIPAL" --all --include-groups --query "length(@)" -o tsv); NOTE='including through groups; other subscriptions not checked'
+          if [ -z "$N" ]; then N=$(azq role assignment list --subscription "$SUB" --assignee "$PRINCIPAL" --all --query "length(@)" -o tsv); NOTE='group memberships and other subscriptions not checked'; fi
+          if [ "${N:-0}" = "1" ]; then ok "Identity $IDENTITY (client ID $CLIENT): Website Contributor on this web app and no other role in subscription $SUB_NAME ($NOTE)"
           else warn "Identity $IDENTITY (client ID $CLIENT) has ${N:-?} role assignments in subscription $SUB_NAME; the demo needs only Website Contributor on $APP"; fi
 
-          F_WANT=''; F_WANT_AUD=''; F_ALT=''; F_ALT_AUD=''; F_OTHER=''
+          F_IMM=''; F_IMM_AUD=''; F_LEG=''; F_LEG_AUD=''; F_OTHER=''
           while IFS=$'\037' read -r fname fiss fsub faud; do
             [ -n "$fname" ] || continue
-            if [ "$fiss" = "$GH_ISSUER" ] && [ "$fsub" = "$WANT" ]; then F_WANT=$fname; F_WANT_AUD=$faud
-            elif [ "$fiss" = "$GH_ISSUER" ] && [ "$fsub" = "$ALT" ]; then F_ALT=$fname; F_ALT_AUD=$faud
+            if [ "$fiss" = "$GH_ISSUER" ] && [ "$fsub" = "$IMMUTABLE" ]; then F_IMM=$fname; F_IMM_AUD=$faud
+            elif [ "$fiss" = "$GH_ISSUER" ] && [ "$fsub" = "$LEGACY" ]; then F_LEG=$fname; F_LEG_AUD=$faud
             else F_OTHER="$F_OTHER $fname ($fiss $fsub);"; fi
-          done <<< "$(azf identity federated-credential list --subscription "$SUB" -g "$IRG" --identity-name "$IDENTITY" --query "[].[name, issuer, subject, join(',', audiences)]")"
-          aud_ok() { [[ ",$1," == *",api://AzureADTokenExchange,"* ]]; }
-          [ -z "$F_WANT$F_ALT" ] || TRUSTED=$IDENTITY
-          if [ -n "$F_WANT" ]; then
-            if aud_ok "$F_WANT_AUD"; then ok "Federated credential $F_WANT trusts $WANT, the $WFMT subject GitHub sends for this repository"
-            else bad "Federated credential $F_WANT: audience '$F_WANT_AUD', expected api://AzureADTokenExchange -> scripts/azure-setup.sh"; fi
-            [ -z "$F_ALT" ] || info "Federated credential $F_ALT also trusts the $AFMT subject; it is not needed"
-          elif [ -n "$F_ALT" ] && [ "$DEPLOY_STATE" = "success" ] && aud_ok "$F_ALT_AUD"; then
-            ok "Federated credential $F_ALT trusts $ALT; the last production deployment signed in with it"
-          elif [ -n "$F_ALT" ]; then
-            bad "Federated credential $F_ALT trusts the $AFMT subject $ALT, but GitHub sends $WANT for a repository created on ${CREATED%%T*} -> SUBJECT_FORMAT=$WFMT scripts/azure-setup.sh (a repository renamed or transferred after 15 July 2026 also sends the immutable one)"
-          elif [ "$N_IDS" = "1" ]; then
-            bad "No federated credential on $IDENTITY trusts the production environment of $REPO -> scripts/azure-setup.sh"
+          done <<< "$(azf identity federated-credential list --subscription "$ISUB" -g "$IRG" --identity-name "$IDENTITY" --query "[].[name, issuer, subject, join(',', audiences)]")"
+          AUD_BAD=''
+          if [ -n "$F_IMM" ] && ! aud_ok "$F_IMM_AUD"; then AUD_BAD="$AUD_BAD $F_IMM ('$F_IMM_AUD')"; F_IMM=''; fi
+          if [ -n "$F_LEG" ] && ! aud_ok "$F_LEG_AUD"; then AUD_BAD="$AUD_BAD $F_LEG ('$F_LEG_AUD')"; F_LEG=''; fi
+          [ -z "$AUD_BAD" ] || report bad "Federated credential audience:$AUD_BAD, expected api://AzureADTokenExchange -> scripts/azure-setup.sh"
+
+          if [ -z "$F_IMM$F_LEG" ]; then
+            [ -n "$AUD_BAD" ] || { if [ "$N_IDS" = "1" ]; then bad "No federated credential on $IDENTITY trusts the production environment of $REPO -> scripts/azure-setup.sh"
+                                   else info "Identity $IDENTITY has no federated credential for $REPO: GitHub Actions in this repository cannot sign in as it"; fi; }
+          elif [ "$NEW_REPO" = "1" ]; then
+            if [ -n "$F_IMM" ]; then report ok "Federated credential $F_IMM trusts $IMMUTABLE, the immutable subject a repository created after 15 July 2026 always sends"; USABLE=1
+              [ -z "$F_LEG" ] || info "Federated credential $F_LEG trusts the legacy subject, which this repository never sends: it is not needed"
+            else report bad "Federated credential $F_LEG trusts the legacy subject $LEGACY, but a repository created after 15 July 2026 always sends $IMMUTABLE -> SUBJECT_FORMAT=immutable scripts/azure-setup.sh"; fi
+          elif [ -n "$F_IMM" ] && [ -n "$F_LEG" ]; then
+            report ok "Federated credentials $F_LEG and $F_IMM trust both subject formats of $REPO"; USABLE=1
+          elif [ -n "$F_LEG" ]; then
+            report maybe "Federated credential $F_LEG trusts the legacy subject $LEGACY. GitHub sends it unless the repository was renamed or transferred after 15 July 2026: the next deployment confirms"; USABLE=1
           else
-            info "Identity $IDENTITY has no federated credential for $REPO: GitHub Actions in this repository cannot sign in as it"
+            report maybe "Federated credential $F_IMM trusts the immutable subject $IMMUTABLE. GitHub sends it for this repository only if it was renamed or transferred after 15 July 2026: the next deployment confirms"; USABLE=1
           fi
           [ -z "$F_OTHER" ] || warn "Identity $IDENTITY also trusts:${F_OTHER%;}. Anyone those match can deploy to $APP -> remove what you do not need"
         done <<< "$IDS"
-        [ "$N_IDS" = "1" ] || [ -n "$TRUSTED" ] || bad "None of the $N_IDS identities trusts the production environment of $REPO -> scripts/azure-setup.sh"
+        [ "$N_IDS" = "1" ] || [ -n "$USABLE" ] || bad "None of the $N_IDS identities can sign in from the production environment of $REPO -> scripts/azure-setup.sh"
       fi
       info "Values for the guide: web app $APP, resource group $RG"
     fi
   fi
 fi
 
+# A past deployment shows that sign-in worked then; changes made since are covered by the checks above, not by this.
 case "$DEPLOY_STATE" in
-  success) ok "Last production deployment (${DEPLOY_AT%%T*}) succeeded: GitHub signed in to Azure with the AZURE_* secrets and the federated credential" ;;
+  success) ok "Last production deployment (${DEPLOY_AT%%T*}) succeeded: Azure sign-in worked at that time" ;;
   failure|error) bad "Last production deployment (${DEPLOY_AT%%T*}) failed -> open the deploy job log in Actions" ;;
   '') warn "No production deployment yet: GitHub does not show secret values, so the first deployment is the real test of AZURE_CLIENT_ID and the federated credential" ;;
   *) warn "Last production deployment (${DEPLOY_AT%%T*}) is $DEPLOY_STATE" ;;
@@ -256,7 +284,8 @@ esac
 
 URL=${WEBAPP_URL:-${HOST:+https://$HOST}}
 URL=${URL:-${APP:+https://$APP.azurewebsites.net}}
-if [ -z "$URL" ]; then bad "No web app URL -> scripts/azure-setup.sh"
+if [ -z "$URL" ] && [ -n "${AMBIGUOUS:-}" ]; then info "/health not checked: no single web app (see above)"
+elif [ -z "$URL" ]; then bad "No web app URL -> scripts/azure-setup.sh"
 elif command -v curl >/dev/null 2>&1; then
   BODY=$(curl -fsS --max-time 20 "$URL/health" 2>/dev/null)
   [[ "$BODY" == *'"ok"'* ]] && ok "$URL/health answers: $BODY" || bad "$URL/health does not answer -> check the last deployment and the App Service log stream"
