@@ -136,4 +136,4 @@ Record every order lookup for audit: who looked up which order, when, and the re
 | `12345` | Invalid format |
 | `100232` | The page accepts the six digits alone and fills in `ORD-` |
 
-Dates are relative to the demo day the data was generated for (3 November 2026 by default). To make "today" match your demo, run `DEMO_DATE=YYYY-MM-DD APPROVER=<approver> scripts/github-setup.sh` a few days before: it regenerates `data/orders.json` for that day, commits it to main, and moves the `demo-start` tag. Then redeploy (Actions → CI/CD → Run workflow).
+Dates are relative to the demo day the data was generated for (3 November 2026 by default). To make "today" match your demo, run `DEMO_DATE=YYYY-MM-DD scripts/github-setup.sh` (add `APPROVER=<approver>` if a second person approves) a few days before: it regenerates `data/orders.json` for that day, commits it to main, and moves the `demo-start` tag. Then redeploy (Actions → CI/CD → Run workflow).

@@ -26,10 +26,12 @@ Copy-paste text for every prompt is in [PROMPTS.md](PROMPTS.md).
 
 ### People
 
-| Role | Does what | Why it must be a second person |
+One account can run the whole demo, and that is the default: `scripts/github-setup.sh` without `APPROVER`. The presenter then also approves the workflow runs on Copilot's pull request and the production deployment, and pull requests need no approving review: the required checks, CodeQL, Copilot code review and resolved conversations gate the merge. A second person (`APPROVER=<user>`) adds a required code-owner approval and a deployment approver other than the presenter, as a team would.
+
+| Role | Does what | With a second person |
 |---|---|---|
-| **Presenter** (developer and requester) | Drives the browser and VS Code, creates the issues, assigns work to Copilot, opens and merges pull requests | |
-| **Approver** (reviewer and release manager) | On a second laptop or browser profile: approves workflow runs on Copilot's pull request, reviews and approves pull requests, approves the production deployment | The person who asks Copilot for work cannot approve the resulting pull request. Workflows on Copilot's pull requests wait for a user with write access to approve them. The production environment has *Prevent self-review* on. |
+| **Presenter** (developer and requester) | Drives the browser and VS Code, creates the issues, assigns work to Copilot, opens and merges pull requests. With one account, also does what the approver does below | |
+| **Approver** (reviewer and release manager, optional) | On a second laptop or browser profile: approves workflow runs on Copilot's pull request, reviews and approves pull requests, approves the production deployment | The person who asks Copilot for work cannot approve the resulting pull request: GitHub does not count that approval. Workflows on Copilot's pull requests wait for a user with write access to approve them. The production environment has *Prevent self-review* on. |
 | Narrator (optional) | Keeps time, links each step back to Sessions 1–4 | |
 
 ### Where to run it: two options
@@ -42,7 +44,7 @@ Copy-paste text for every prompt is in [PROMPTS.md](PROMPTS.md).
 | Push protection with the "Contoso demo token" custom pattern | Needs GitHub Secret Protection; custom patterns need an organization | Not available (custom patterns need an organization). Skip that optional step |
 | Required reviewer on the production environment | GitHub Enterprise for private repositories | Works on public repositories |
 | Issue types (`type: feature`) | Yes, in the organization's settings | Not available; the form works without a type |
-| CODEOWNERS | A team or users | Users only (the approver) |
+| CODEOWNERS | A team or users | Users only (you, or the approver) |
 
 Everything else (issues, sub-issues, Projects, rulesets, Actions, environments, OIDC to Azure) works in both options.
 
@@ -82,7 +84,7 @@ In Cloud Shell or your terminal, signed in with `gh auth login` as a repository 
 ```bash
 git clone https://github.com/<owner>/contoso-order-desk && cd contoso-order-desk
 gh auth refresh -s project            # lets the script create the "Order Desk" project
-APPROVER=<approver-github-username> scripts/github-setup.sh
+scripts/github-setup.sh               # one account; two people: APPROVER=<approver-github-username> scripts/github-setup.sh
 ```
 
 Organization repositories with issue types and a team: add `ISSUE_TYPE=feature` and `CODEOWNERS_TEAM=@<org>/<team>`.
@@ -90,12 +92,12 @@ Organization repositories with issue types and a team: add `ISSUE_TYPE=feature` 
 | The script does | Where you can check it |
 |---|---|
 | Squash merge only; delete branches after merge | Settings → General |
-| Invites the approver with write access (they accept the invitation, then you run the script again) | Settings → Collaborators and teams |
+| Two people only: invites the approver with write access (they accept the invitation, then you run the script again) | Settings → Collaborators and teams |
 | Creates or reuses the project **Order Desk** and links it | Projects tab |
-| Writes `.github/CODEOWNERS` (approver or team) and sets `projects:` (and `type:`) in the feature request form, then commits to main | `.github/` |
+| Writes `.github/CODEOWNERS` (you, the approver or a team) and sets `projects:` (and `type:`) in the feature request form, then commits to main | `.github/` |
 | Dependabot alerts and security updates, secret scanning, push protection, CodeQL default setup | Settings → Advanced Security |
-| Environment **production**: required reviewer = approver, *Prevent self-review* on, deployments from main only | Settings → Environments |
-| Ruleset **Protect main**: pull request with 1 code-owner approval, stale approvals dismissed, conversations resolved, squash only; required checks `build` and `dependency-review`; CodeQL results (high or higher fails); automatic Copilot code review including new pushes; no deletion or force push | Settings → Rules → Rulesets |
+| Environment **production**: required reviewer = you with *Prevent self-review* off (one account), or the approver with it on; deployments from main only | Settings → Environments |
+| Ruleset **Protect main**: pull request with 1 code-owner approval (two people) or none (one account), stale approvals dismissed, conversations resolved, squash only; required checks `build` and `dependency-review`; CodeQL results (high or higher fails); automatic Copilot code review including new pushes; no deletion or force push | Settings → Rules → Rulesets |
 | Runs **Copilot Setup Steps** once | Actions tab |
 | Tags the starting point `demo-start` | Tags |
 
@@ -118,7 +120,7 @@ It creates, in resource group `rg-contoso-order-desk`:
 | Application Insights with a Log Analytics workspace | Auto-instrumentation app settings (Node.js on Linux: public preview) | Operational visibility |
 | User-assigned managed identity `id-github-order-desk` | **Website Contributor on the web app only**; federated credential that trusts only the repository's `production` environment | Microsoft Learn recommends OpenID Connect with a user-assigned identity: short-lived tokens, nothing to rotate |
 
-and stores `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` as **environment secrets** of `production` (a job reads them only after the approver approves), plus the repository variable `AZURE_WEBAPP_NAME`. The deploy job is skipped until that variable exists.
+and stores `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` as **environment secrets** of `production` (a job reads them only after the deployment is approved), plus the repository variable `AZURE_WEBAPP_NAME`. The deploy job is skipped until that variable exists.
 
 > **OIDC subject format.** GitHub Docs: repositories created after 15 July 2026 (and repositories renamed or transferred after that date) use an immutable subject that includes the owner and repository IDs, for example `repo:<owner>@<owner-id>/<repo>@<repo-id>:environment:production`. Older repositories keep `repo:<owner>/<repo>:environment:production`. The script picks the format from the repository's creation date. If the login step fails with `AADSTS70021`, the error message shows the subject GitHub sent; rerun with `SUBJECT_FORMAT=legacy` or `SUBJECT_FORMAT=immutable` to match it. Microsoft Learn pages do not describe the immutable format yet.
 
@@ -126,7 +128,7 @@ and stores `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` as *
 
 ### Step 5. First deployment
 
-`azure-setup.sh` starts the **CI/CD** workflow on main. In **Actions**, the run shows `build` passing and `deploy` *Waiting*. The **approver** opens the run, selects **Review deployments**, ticks **production** and selects **Approve and deploy**. When it finishes, open the URL shown on the deploy job: you see the Order Desk placeholder page ("Order lookup is on its way"). That is the "before" picture for the audience.
+`azure-setup.sh` starts the **CI/CD** workflow on main. In **Actions**, the run shows `build` passing and `deploy` *Waiting*. The required reviewer (you with one account, otherwise the approver) opens the run, selects **Review deployments**, ticks **production** and selects **Approve and deploy**. When it finishes, open the URL shown on the deploy job: you see the Order Desk placeholder page ("Order lookup is on its way"). That is the "before" picture for the audience.
 
 ### Step 6. The few things only the browser can do
 
@@ -136,7 +138,7 @@ and stores `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` as *
 
 ### Step 7. Rehearse twice, and record one rehearsal
 
-Run the whole show (section 4) with the approver. Time each act. Record one full rehearsal as the backup video. If the cloud agent produces a good pull request in rehearsal, label it `keep` and convert it to a draft: `reset-demo.sh` keeps it as a live fallback for Act 3. Then reset (section 5).
+Run the whole show (section 4), with the approver if you have one. Time each act. Record one full rehearsal as the backup video. If the cloud agent produces a good pull request in rehearsal, label it `keep` and convert it to a draft: `reset-demo.sh` keeps it as a live fallback for Act 3. Then reset (section 5).
 
 ---
 
@@ -144,7 +146,7 @@ Run the whole show (section 4) with the approver. Time each act. Record one full
 
 | When | Do |
 |---|---|
-| Day before | `scripts/reset-demo.sh`; redeploy the starting point (**Actions → CI/CD → Run workflow** on main, approver approves); update VS Code and Copilot |
+| Day before | `scripts/reset-demo.sh`; redeploy the starting point (**Actions → CI/CD → Run workflow** on main, then approve the deployment); update VS Code and Copilot |
 | At least 60 minutes before | `scripts/prepare-security-prs.sh`: opens the two security pull requests so CodeQL and dependency review finish in time |
 | 30 minutes before, and again in the break | `scripts/preflight.sh`: checks workflows, ruleset, environment, secrets, last runs, the security pull requests and the web app's `/health`. With the Azure CLI signed in (`az login`, or Cloud Shell) it also finds and checks the Azure side by itself: web app settings, basic authentication off, Application Insights, the identity's role and its federated credential |
 | 15 minutes before | Open the tabs: repository, project board, Actions, Settings → Rules → Rulesets, Security tab, Azure portal (web app), the web app. VS Code: font size 18+, `npm ci` done, terminal open in the repository, Agent and Plan modes visible, notifications off |
@@ -160,15 +162,15 @@ The ten chapters match the replay. Each step lists what to **do**, what to **typ
 | Set the scene | 0–3 | Presenter |
 | 1. Issues & Projects | Act 1 · 3–10 | Presenter |
 | 2. GitHub Copilot (VS Code) | Act 2 · 10–24 | Presenter |
-| 3. Pull requests | Act 3 · 24–32 | Presenter + Approver |
+| 3. Pull requests | Act 3 · 24–32 | Presenter (+ Approver) |
 | 4. Security gates | Act 4 · 32–44 | Presenter |
-| 5. Ruleset · 6. Actions · 7. Environment · 8. Azure · 9. Live app | Act 5 · 44–54 | Presenter + Approver |
+| 5. Ruleset · 6. Actions · 7. Environment · 8. Azure · 9. Live app | Act 5 · 44–54 | Presenter (+ Approver) |
 | 10. Close the loop | Act 6 · 54–60 | Presenter |
 
 ### Set the scene (0–3 min)
 
 - **Do:** show the live web app (placeholder page) and the repository: a small Node.js 24 + Express 5 app with synthetic order data.
-- **Say:** read the business requirement aloud (it is in [PROMPTS.md](PROMPTS.md#0-business-requirement)). Introduce the approver: "two people, because the platform will not let one person approve their own work."
+- **Say:** read the business requirement aloud (it is in [PROMPTS.md](PROMPTS.md#0-business-requirement)). With a second person, introduce the approver: "two people, because the platform will not let one person approve their own work." With one account, say that a team would add a required approval from a second person.
 
 ### Chapter 1 · Issues & Projects (3–10 min)
 
@@ -213,11 +215,11 @@ Keep the clock visible: if you are more than 3 minutes behind at minute 24, use 
    **Expect:** a review from Copilot with comments, usually within a minute. It is a *Comment* review and does not count toward the required approval.
    **Do:** read one comment aloud and apply a suggestion with **Commit suggestion**, or ask for a change with a reply. Resolve the conversation (the ruleset requires resolved conversations).
 2. **Do:** open the cloud agent's pull request (linked from issue #14) and select **View session**: the agent's plan, the commands it ran, its tests and its self-checks.
-3. **Approver:** on the pull request, select **Approve and run workflows** so the checks start.
+3. **Approver** (with one account, you): on the pull request, select **Approve and run workflows** so the checks start.
 4. **Do:** comment on the cloud agent's pull request.
    **Type:** [prompt 5](PROMPTS.md#5-iterate-on-copilots-pull-request).
    **Expect:** Copilot reacts, works, and pushes a new commit to the same pull request.
-5. **Approver:** after Copilot's last push, review and **Approve** both pull requests (the code owner review is required). Approving earlier would be dismissed by a new push.
+5. **Approver** (two people): after Copilot's last push, review and **Approve** both pull requests (the code owner review is required). Approving earlier would be dismissed by a new push. With one account no approval is required: review the diffs yourself.
    **Say:** "Copilot gives a fast first review, but merging still needs a different human's approval. That is enforced by the platform, not by good intentions."
 
 **If it fails:** if the cloud agent's pull request is not ready, show the live session log, then open the `keep` draft pull request from rehearsal, or open one from the fallback branch:
@@ -249,10 +251,10 @@ scripts/push-protection-demo.sh
 
 ### Chapters 5–9 · Ruleset, Actions, Environment, Azure, Live app (44–54 min)
 
-1. **Ruleset (chapter 5):** open **Settings → Rules → Rulesets → Protect main** for twenty seconds: required review from code owners, required checks, CodeQL results, automatic Copilot review, no force push.
+1. **Ruleset (chapter 5):** open **Settings → Rules → Rulesets → Protect main** for twenty seconds: required review from code owners (two people), required checks, CodeQL results, automatic Copilot review, no force push.
    **Do:** **Squash and merge** the API pull request, then the page pull request. `Fixes #13` and `Fixes #14` close the sub-issues.
 2. **Actions (chapter 6):** open **Actions → CI/CD** on main: `build` passes, then `deploy` shows *Waiting* for the production environment. If you merged both pull requests within a minute, the first run's `deploy` is cancelled on purpose (one deployment at a time); the newer run deploys both changes with a single approval.
-3. **Environment production (chapter 7):** the **approver** selects **Review deployments → production → Approve and deploy**. With *Prevent self-review* on, the presenter could not approve it.
+3. **Environment production (chapter 7):** the required reviewer (you with one account, otherwise the approver) selects **Review deployments → production → Approve and deploy**. With two people *Prevent self-review* is on, so the presenter could not approve it.
 4. **Azure (chapter 8):** open the deploy job's log. The **Az CLI login (OIDC, no stored password)** step signs in with a short-lived token.
    **Say:** "Azure trusts a short-lived token from this repository's production environment, and nothing else. The identity can deploy to this one web app only. A person approved the release, and GitHub recorded it."
    Optionally show the managed identity's **Federated credentials** and its **Website Contributor** role assignment in the Azure portal.
@@ -285,15 +287,16 @@ scripts/push-protection-demo.sh
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | Copilot does not appear under **Assignees** | Cloud agent not enabled for the repository, or no eligible seat | Section 2, step 2. Check the organization's Copilot policies and repository access |
-| Checks never start on Copilot's pull request | Workflows on Copilot's pull requests need approval | The approver selects **Approve and run workflows** |
-| You cannot approve Copilot's pull request | You requested the work | By design: the approver approves |
+| Checks never start on Copilot's pull request | Workflows on Copilot's pull requests need approval | A user with write access (you, or the approver) selects **Approve and run workflows** |
+| You cannot approve Copilot's pull request | You requested the work | By design: the approver approves. With one account, `scripts/github-setup.sh` without `APPROVER` requires no approval |
 | Merge blocked: "Review required" after approval | A new push dismissed the approval (*dismiss stale approvals*) | Approve again after the last push |
 | Merge blocked: "Conversations must be resolved" | Open review threads (including Copilot's) | Resolve each conversation |
 | Required check `build` or `dependency-review` "expected" but never runs | The workflow file is missing on the branch, or the check name changed | The jobs must be called `build` and `dependency-review`; branch from current main |
 | CodeQL check passes on `demo/not-found-message` | Analysis not finished, or thresholds differ | Wait for **Code scanning results**; in the ruleset, set *Security alerts* to *High or higher* and *Alerts* to *Errors* |
 | Dependency review passes on `demo/add-date-helper` | Dependency graph off, or the advisory data changed | Turn on the dependency graph; check the advisories for `lodash@4.17.15` on the GitHub Advisory Database |
 | Deploy job skipped | `AZURE_WEBAPP_NAME` variable not set | Run `scripts/azure-setup.sh` |
-| Deploy waits for ever | Nobody approved it | The approver selects **Review deployments** |
+| Deploy waits for ever | Nobody approved it | The required reviewer (you, or the approver) selects **Review deployments** |
+| You cannot approve your own deployment | You are the only reviewer and *Prevent self-review* is on | `scripts/github-setup.sh` without `APPROVER` (one account) turns it off |
 | Login fails with `AADSTS70021: No matching federated identity record` | Subject mismatch | Read the subject in the error; rerun `azure-setup.sh` with `SUBJECT_FORMAT=legacy` or `immutable` |
 | Login fails with an authorization error during deploy | Role assignment still replicating, or missing | Wait two minutes and re-run the job; check **Website Contributor** on the web app |
 | Smoke test fails after deploy | App still starting | Re-run the job; check **Log stream** for the web app in the Azure portal |

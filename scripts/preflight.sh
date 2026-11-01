@@ -63,6 +63,16 @@ if ! gh api "repos/$REPO/environments/production" --silent >/dev/null 2>&1; then
 else
   REVIEWERS=$(gh api "repos/$REPO/environments/production" --jq '[.protection_rules[]? | select(.type == "required_reviewers") | .reviewers[].reviewer | (.login // .slug)] | join(", ")' 2>/dev/null)
   [ -n "$REVIEWERS" ] && ok "Environment 'production' needs approval from: $REVIEWERS" || bad "Environment 'production' has no required reviewer -> scripts/github-setup.sh"
+  # One account (you are the only reviewer): two settings would leave nobody able to approve.
+  ME=$(gh api user --jq .login 2>/dev/null)
+  if [ -n "$ME" ] && [ "$(printf '%s' "$REVIEWERS" | tr '[:upper:]' '[:lower:]')" = "$(printf '%s' "$ME" | tr '[:upper:]' '[:lower:]')" ]; then
+    [ "$(gh api "repos/$REPO/environments/production" --jq '[.protection_rules[]? | select(.type == "required_reviewers") | .prevent_self_review] | any' 2>/dev/null)" != "true" ] \
+      || warn "You are the only reviewer of 'production' and Prevent self-review is on: GitHub does not let you approve a deployment you started -> scripts/github-setup.sh without APPROVER (one account)"
+    if [ -n "$RULESET" ]; then
+      APPROVALS=$(gh api "repos/$REPO/rulesets/$RULESET" --jq '[.rules[] | select(.type == "pull_request") | .parameters.required_approving_review_count] | max // 0' 2>/dev/null)
+      [ "${APPROVALS:-0}" = "0" ] || warn "Pull requests need $APPROVALS approval(s), but GitHub does not count yours on your own pull request or on one you asked Copilot for -> a second person approves, or scripts/github-setup.sh without APPROVER (one account)"
+    fi
+  fi
 fi
 SECRETS=$(gh secret list --env production -R "$REPO" --json name --jq '[.[].name] | join(" ")' 2>/dev/null)
 for s in AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID; do
@@ -357,7 +367,7 @@ fi
 
 step "Check by hand"
 cat <<'MANUAL'
-  - Presenter signed in to GitHub and VS Code; Approver signed in with the second account in another browser or on a second laptop
+  - Presenter signed in to GitHub and VS Code; with a second person, the Approver signed in with that account in another browser or on a second laptop
   - Copilot: cloud agent enabled for this repository; Copilot code review available; Agent and Plan modes visible in VS Code
   - VS Code: font size 18+, npm ci done, terminal open in the repository, notifications off
   - Tabs: repository, project board, Actions, Settings > Rules, Security tab, Azure portal (web app), the web app itself
