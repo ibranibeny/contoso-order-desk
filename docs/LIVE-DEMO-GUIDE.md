@@ -87,7 +87,7 @@ gh auth refresh -s project            # lets the script create the "Order Desk" 
 scripts/github-setup.sh               # one account; two people: APPROVER=<approver-github-username> scripts/github-setup.sh
 ```
 
-Organization repositories with issue types and a team: add `ISSUE_TYPE=feature` and `CODEOWNERS_TEAM=@<org>/<team>`.
+Organization repositories with issue types and a team: add `ISSUE_TYPE=feature` and `CODEOWNERS_TEAM=@<org>/<team>`. A repository owned by a user has neither, so the script stops if you pass them there.
 
 | The script does | Where you can check it |
 |---|---|
