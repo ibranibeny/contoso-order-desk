@@ -1,0 +1,1774 @@
+[
+  {
+    "id": "ORD-100200",
+    "status": "Delivered",
+    "placedAt": "2026-10-31T20:09:00Z",
+    "lastUpdated": "2026-11-03T18:59:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "marketplace",
+    "customer": {
+      "name": "Wulan Pratama",
+      "email": "wulan.pratama@example.com",
+      "phone": "+62 21 5550 0446"
+    },
+    "shipping": {
+      "city": "Bandung",
+      "country": "ID",
+      "carrier": "Fabrikam Freight",
+      "trackingNumber": "CX95742134ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-ELE-0330",
+        "name": "USB-C charging hub, 7-in-1",
+        "quantity": 1,
+        "unitPrice": 649000
+      },
+      {
+        "sku": "CTS-ELE-0751",
+        "name": "Smart LED bulb, 4-pack",
+        "quantity": 2,
+        "unitPrice": 479000
+      },
+      {
+        "sku": "CTS-TOY-0812",
+        "name": "Wooden building blocks, 120 pieces",
+        "quantity": 1,
+        "unitPrice": 389000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1996000,
+      "shippingFee": 0,
+      "total": 1996000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "3772",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100201",
+    "status": "Out for delivery",
+    "placedAt": "2026-10-31T16:28:00Z",
+    "lastUpdated": "2026-11-03T18:43:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "web",
+    "customer": {
+      "name": "Fajar Gunawan",
+      "email": "fajar.gunawan@example.com",
+      "phone": "+62 21 5550 0632"
+    },
+    "shipping": {
+      "city": "Makassar",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX87087705ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-ELE-0751",
+        "name": "Smart LED bulb, 4-pack",
+        "quantity": 1,
+        "unitPrice": 479000
+      },
+      {
+        "sku": "CTS-SPT-0418",
+        "name": "Running shoes",
+        "quantity": 1,
+        "unitPrice": 1099000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1578000,
+      "shippingFee": 0,
+      "total": 1578000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "3512",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100202",
+    "status": "Delivered",
+    "placedAt": "2026-10-24T12:14:00Z",
+    "lastUpdated": "2026-10-27T16:57:00Z",
+    "estimatedDelivery": "2026-10-27",
+    "channel": "web",
+    "customer": {
+      "name": "Eka Tanjung",
+      "email": "eka.tanjung@example.com",
+      "phone": "+62 21 5550 0984"
+    },
+    "shipping": {
+      "city": "Denpasar",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": "CX84459847ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-ELE-0751",
+        "name": "Smart LED bulb, 4-pack",
+        "quantity": 2,
+        "unitPrice": 479000
+      },
+      {
+        "sku": "CTS-BAG-0520",
+        "name": "Carry-on suitcase, 55 cm",
+        "quantity": 2,
+        "unitPrice": 1750000
+      },
+      {
+        "sku": "CTS-KIT-0634",
+        "name": "Chef's knife, 20 cm",
+        "quantity": 2,
+        "unitPrice": 899000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 6256000,
+      "shippingFee": 0,
+      "total": 6256000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "3054",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100204",
+    "status": "Out for delivery",
+    "placedAt": "2026-10-31T16:02:00Z",
+    "lastUpdated": "2026-11-03T14:28:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "web",
+    "customer": {
+      "name": "Tomas Hidayat",
+      "email": "tomas.hidayat@example.com",
+      "phone": "+62 21 5550 0152"
+    },
+    "shipping": {
+      "city": "Medan",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX92175125ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-HOM-0215",
+        "name": "Linen bedding set, queen",
+        "quantity": 1,
+        "unitPrice": 1249000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1249000,
+      "shippingFee": 25000,
+      "total": 1274000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "6758",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100205",
+    "status": "Cancelled",
+    "placedAt": "2026-10-31T12:21:00Z",
+    "lastUpdated": "2026-11-02T17:23:00Z",
+    "estimatedDelivery": null,
+    "channel": "marketplace",
+    "customer": {
+      "name": "Ayu Nugroho",
+      "email": "ayu.nugroho@example.com",
+      "phone": "+62 21 5550 0343"
+    },
+    "shipping": {
+      "city": "Makassar",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": null
+    },
+    "items": [
+      {
+        "sku": "CTS-BTY-0905",
+        "name": "Vitamin C serum, 30 ml",
+        "quantity": 2,
+        "unitPrice": 259000
+      },
+      {
+        "sku": "CTS-AUD-0042",
+        "name": "Wireless noise-cancelling headphones",
+        "quantity": 1,
+        "unitPrice": 1899000
+      },
+      {
+        "sku": "CTS-SPT-0419",
+        "name": "Yoga mat, 6 mm",
+        "quantity": 1,
+        "unitPrice": 329000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 2746000,
+      "shippingFee": 0,
+      "total": 2746000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "5763",
+      "status": "refunded"
+    }
+  },
+  {
+    "id": "ORD-100208",
+    "status": "Out for delivery",
+    "placedAt": "2026-10-28T10:32:00Z",
+    "lastUpdated": "2026-11-03T09:37:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "app",
+    "customer": {
+      "name": "Sari Tanjung",
+      "email": "sari.tanjung@example.com",
+      "phone": "+62 21 5550 0538"
+    },
+    "shipping": {
+      "city": "Jakarta",
+      "country": "ID",
+      "carrier": "Fabrikam Freight",
+      "trackingNumber": "CX77496471ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0634",
+        "name": "Chef's knife, 20 cm",
+        "quantity": 2,
+        "unitPrice": 899000
+      },
+      {
+        "sku": "CTS-AUD-0042",
+        "name": "Wireless noise-cancelling headphones",
+        "quantity": 2,
+        "unitPrice": 1899000
+      },
+      {
+        "sku": "CTS-HOM-0215",
+        "name": "Linen bedding set, queen",
+        "quantity": 1,
+        "unitPrice": 1249000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 6845000,
+      "shippingFee": 0,
+      "total": 6845000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "7582",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100209",
+    "status": "Cancelled",
+    "placedAt": "2026-10-25T10:46:00Z",
+    "lastUpdated": "2026-10-27T08:37:00Z",
+    "estimatedDelivery": null,
+    "channel": "web",
+    "customer": {
+      "name": "Rizky Kusuma",
+      "email": "rizky.kusuma@example.com",
+      "phone": "+62 21 5550 0462"
+    },
+    "shipping": {
+      "city": "Bandung",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": null
+    },
+    "items": [
+      {
+        "sku": "CTS-SPT-0419",
+        "name": "Yoga mat, 6 mm",
+        "quantity": 1,
+        "unitPrice": 329000
+      },
+      {
+        "sku": "CTS-SPT-0418",
+        "name": "Running shoes",
+        "quantity": 1,
+        "unitPrice": 1099000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1428000,
+      "shippingFee": 25000,
+      "total": 1453000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "7560",
+      "status": "refunded"
+    }
+  },
+  {
+    "id": "ORD-100215",
+    "status": "Shipped",
+    "placedAt": "2026-10-25T21:22:00Z",
+    "lastUpdated": "2026-10-29T19:30:00Z",
+    "estimatedDelivery": "2026-11-04",
+    "channel": "web",
+    "customer": {
+      "name": "Gita Siregar",
+      "email": "gita.siregar@example.com",
+      "phone": "+62 21 5550 0435"
+    },
+    "shipping": {
+      "city": "Bandung",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": "CX23327639ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-SPT-0418",
+        "name": "Running shoes",
+        "quantity": 2,
+        "unitPrice": 1099000
+      },
+      {
+        "sku": "CTS-SPT-0419",
+        "name": "Yoga mat, 6 mm",
+        "quantity": 1,
+        "unitPrice": 329000
+      },
+      {
+        "sku": "CTS-ELE-0751",
+        "name": "Smart LED bulb, 4-pack",
+        "quantity": 2,
+        "unitPrice": 479000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 3485000,
+      "shippingFee": 0,
+      "total": 3485000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "5285",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100219",
+    "status": "Cancelled",
+    "placedAt": "2026-10-31T07:34:00Z",
+    "lastUpdated": "2026-11-01T07:32:00Z",
+    "estimatedDelivery": null,
+    "channel": "web",
+    "customer": {
+      "name": "Nadia Nugroho",
+      "email": "nadia.nugroho@example.com",
+      "phone": "+62 21 5550 0153"
+    },
+    "shipping": {
+      "city": "Denpasar",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": null
+    },
+    "items": [
+      {
+        "sku": "CTS-AUD-0042",
+        "name": "Wireless noise-cancelling headphones",
+        "quantity": 1,
+        "unitPrice": 1899000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1899000,
+      "shippingFee": 0,
+      "total": 1899000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "1732",
+      "status": "refunded"
+    }
+  },
+  {
+    "id": "ORD-100221",
+    "status": "Shipped",
+    "placedAt": "2026-10-26T17:05:00Z",
+    "lastUpdated": "2026-10-29T09:03:00Z",
+    "estimatedDelivery": "2026-11-04",
+    "channel": "marketplace",
+    "customer": {
+      "name": "Lukas Lestari",
+      "email": "lukas.lestari@example.com",
+      "phone": "+62 21 5550 0965"
+    },
+    "shipping": {
+      "city": "Medan",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX56818705ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-OFF-1003",
+        "name": "Ergonomic office chair",
+        "quantity": 2,
+        "unitPrice": 3499000
+      },
+      {
+        "sku": "CTS-ELE-0751",
+        "name": "Smart LED bulb, 4-pack",
+        "quantity": 1,
+        "unitPrice": 479000
+      },
+      {
+        "sku": "CTS-ELE-0330",
+        "name": "USB-C charging hub, 7-in-1",
+        "quantity": 1,
+        "unitPrice": 649000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 8126000,
+      "shippingFee": 0,
+      "total": 8126000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "7824",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100222",
+    "status": "Cancelled",
+    "placedAt": "2026-10-27T08:59:00Z",
+    "lastUpdated": "2026-10-30T11:54:00Z",
+    "estimatedDelivery": null,
+    "channel": "app",
+    "customer": {
+      "name": "Fajar Halim",
+      "email": "fajar.halim@example.com",
+      "phone": "+62 21 5550 0168"
+    },
+    "shipping": {
+      "city": "Semarang",
+      "country": "ID",
+      "carrier": "Fabrikam Freight",
+      "trackingNumber": null
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0634",
+        "name": "Chef's knife, 20 cm",
+        "quantity": 2,
+        "unitPrice": 899000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1798000,
+      "shippingFee": 0,
+      "total": 1798000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "3141",
+      "status": "refunded"
+    }
+  },
+  {
+    "id": "ORD-100227",
+    "status": "Delivered",
+    "placedAt": "2026-10-28T20:53:00Z",
+    "lastUpdated": "2026-11-01T11:21:00Z",
+    "estimatedDelivery": "2026-11-01",
+    "channel": "app",
+    "customer": {
+      "name": "Wulan Siregar",
+      "email": "wulan.siregar@example.com",
+      "phone": "+62 21 5550 0223"
+    },
+    "shipping": {
+      "city": "Semarang",
+      "country": "ID",
+      "carrier": "Fabrikam Freight",
+      "trackingNumber": "CX41253021ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0107",
+        "name": "Stainless steel kettle 1.7 L",
+        "quantity": 2,
+        "unitPrice": 459000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 918000,
+      "shippingFee": 25000,
+      "total": 943000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "8089",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100231",
+    "status": "Packed",
+    "placedAt": "2026-11-01T03:12:00Z",
+    "lastUpdated": "2026-11-02T08:15:00Z",
+    "estimatedDelivery": "2026-11-05",
+    "channel": "web",
+    "customer": {
+      "name": "Eka Tanjung",
+      "email": "eka.tanjung@example.com",
+      "phone": "+62 21 5550 0821"
+    },
+    "shipping": {
+      "city": "Bandung",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": null
+    },
+    "items": [
+      {
+        "sku": "CTS-ELE-0330",
+        "name": "USB-C charging hub, 7-in-1",
+        "quantity": 2,
+        "unitPrice": 649000
+      },
+      {
+        "sku": "CTS-KIT-0634",
+        "name": "Chef's knife, 20 cm",
+        "quantity": 1,
+        "unitPrice": 899000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 2197000,
+      "shippingFee": 0,
+      "total": 2197000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "6576",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100232",
+    "status": "Out for delivery",
+    "placedAt": "2026-10-31T14:02:00Z",
+    "lastUpdated": "2026-11-03T06:40:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "app",
+    "customer": {
+      "name": "Tomas Kusuma",
+      "email": "tomas.kusuma@example.com",
+      "phone": "+62 21 5550 0101"
+    },
+    "shipping": {
+      "city": "Surabaya",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": "CX80024763ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0107",
+        "name": "Stainless steel kettle 1.7 L",
+        "quantity": 1,
+        "unitPrice": 459000
+      },
+      {
+        "sku": "CTS-ELE-0330",
+        "name": "USB-C charging hub, 7-in-1",
+        "quantity": 1,
+        "unitPrice": 649000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1108000,
+      "shippingFee": 25000,
+      "total": 1133000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "9479",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100233",
+    "status": "Delivered",
+    "placedAt": "2026-10-28T09:48:00Z",
+    "lastUpdated": "2026-11-01T12:05:00Z",
+    "estimatedDelivery": "2026-11-01",
+    "channel": "web",
+    "customer": {
+      "name": "Gita Siregar",
+      "email": "gita.siregar@example.com",
+      "phone": "+62 21 5550 0172"
+    },
+    "shipping": {
+      "city": "Jakarta",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX79601798ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-ELE-0330",
+        "name": "USB-C charging hub, 7-in-1",
+        "quantity": 1,
+        "unitPrice": 649000
+      },
+      {
+        "sku": "CTS-SPT-0418",
+        "name": "Running shoes",
+        "quantity": 1,
+        "unitPrice": 1099000
+      },
+      {
+        "sku": "CTS-KIT-0634",
+        "name": "Chef's knife, 20 cm",
+        "quantity": 2,
+        "unitPrice": 899000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 3546000,
+      "shippingFee": 0,
+      "total": 3546000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "4554",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100234",
+    "status": "Payment pending",
+    "placedAt": "2026-11-03T09:21:00Z",
+    "lastUpdated": "2026-11-03T09:30:00Z",
+    "estimatedDelivery": null,
+    "channel": "marketplace",
+    "customer": {
+      "name": "Wulan Saputra",
+      "email": "wulan.saputra@example.com",
+      "phone": "+62 21 5550 0346"
+    },
+    "shipping": {
+      "city": "Medan",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": null
+    },
+    "items": [
+      {
+        "sku": "CTS-ELE-0751",
+        "name": "Smart LED bulb, 4-pack",
+        "quantity": 2,
+        "unitPrice": 479000
+      },
+      {
+        "sku": "CTS-SPT-0418",
+        "name": "Running shoes",
+        "quantity": 1,
+        "unitPrice": 1099000
+      },
+      {
+        "sku": "CTS-OFF-1003",
+        "name": "Ergonomic office chair",
+        "quantity": 1,
+        "unitPrice": 3499000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 5556000,
+      "shippingFee": 0,
+      "total": 5556000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "6401",
+      "status": "pending"
+    }
+  },
+  {
+    "id": "ORD-100236",
+    "status": "Delivered",
+    "placedAt": "2026-10-31T07:14:00Z",
+    "lastUpdated": "2026-11-02T18:43:00Z",
+    "estimatedDelivery": "2026-11-02",
+    "channel": "web",
+    "customer": {
+      "name": "Wulan Nugroho",
+      "email": "wulan.nugroho@example.com",
+      "phone": "+62 21 5550 0780"
+    },
+    "shipping": {
+      "city": "Medan",
+      "country": "ID",
+      "carrier": "Fabrikam Freight",
+      "trackingNumber": "CX96076733ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-AUD-0042",
+        "name": "Wireless noise-cancelling headphones",
+        "quantity": 2,
+        "unitPrice": 1899000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 3798000,
+      "shippingFee": 0,
+      "total": 3798000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "4182",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100237",
+    "status": "Out for delivery",
+    "placedAt": "2026-10-24T17:47:00Z",
+    "lastUpdated": "2026-11-03T11:38:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "web",
+    "customer": {
+      "name": "Rizky Gunawan",
+      "email": "rizky.gunawan@example.com",
+      "phone": "+62 21 5550 0957"
+    },
+    "shipping": {
+      "city": "Makassar",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": "CX95279523ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-ELE-0330",
+        "name": "USB-C charging hub, 7-in-1",
+        "quantity": 1,
+        "unitPrice": 649000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 649000,
+      "shippingFee": 25000,
+      "total": 674000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "9581",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100238",
+    "status": "Out for delivery",
+    "placedAt": "2026-10-31T08:29:00Z",
+    "lastUpdated": "2026-11-03T14:18:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "marketplace",
+    "customer": {
+      "name": "Fajar Hidayat",
+      "email": "fajar.hidayat@example.com",
+      "phone": "+62 21 5550 0443"
+    },
+    "shipping": {
+      "city": "Medan",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": "CX66303703ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-BTY-0905",
+        "name": "Vitamin C serum, 30 ml",
+        "quantity": 2,
+        "unitPrice": 259000
+      },
+      {
+        "sku": "CTS-SPT-0418",
+        "name": "Running shoes",
+        "quantity": 1,
+        "unitPrice": 1099000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1617000,
+      "shippingFee": 0,
+      "total": 1617000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "1586",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100239",
+    "status": "Delivered",
+    "placedAt": "2026-10-30T20:55:00Z",
+    "lastUpdated": "2026-11-01T11:07:00Z",
+    "estimatedDelivery": "2026-11-01",
+    "channel": "web",
+    "customer": {
+      "name": "Hana Lestari",
+      "email": "hana.lestari@example.com",
+      "phone": "+62 21 5550 0448"
+    },
+    "shipping": {
+      "city": "Surabaya",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX62818036ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-HOM-0215",
+        "name": "Linen bedding set, queen",
+        "quantity": 2,
+        "unitPrice": 1249000
+      },
+      {
+        "sku": "CTS-AUD-0042",
+        "name": "Wireless noise-cancelling headphones",
+        "quantity": 1,
+        "unitPrice": 1899000
+      },
+      {
+        "sku": "CTS-BAG-0520",
+        "name": "Carry-on suitcase, 55 cm",
+        "quantity": 2,
+        "unitPrice": 1750000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 7897000,
+      "shippingFee": 0,
+      "total": 7897000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "6826",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100240",
+    "status": "Shipped",
+    "placedAt": "2026-10-28T14:45:00Z",
+    "lastUpdated": "2026-11-01T11:31:00Z",
+    "estimatedDelivery": "2026-11-06",
+    "channel": "web",
+    "customer": {
+      "name": "Gita Tanjung",
+      "email": "gita.tanjung@example.com",
+      "phone": "+62 21 5550 0762"
+    },
+    "shipping": {
+      "city": "Surabaya",
+      "country": "ID",
+      "carrier": "Fabrikam Freight",
+      "trackingNumber": "CX72570592ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0107",
+        "name": "Stainless steel kettle 1.7 L",
+        "quantity": 2,
+        "unitPrice": 459000
+      },
+      {
+        "sku": "CTS-TOY-0812",
+        "name": "Wooden building blocks, 120 pieces",
+        "quantity": 2,
+        "unitPrice": 389000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1696000,
+      "shippingFee": 0,
+      "total": 1696000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "2123",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100242",
+    "status": "Delivered",
+    "placedAt": "2026-10-27T13:40:00Z",
+    "lastUpdated": "2026-11-02T16:22:00Z",
+    "estimatedDelivery": "2026-11-02",
+    "channel": "web",
+    "customer": {
+      "name": "Indra Tanjung",
+      "email": "indra.tanjung@example.com",
+      "phone": "+62 21 5550 0955"
+    },
+    "shipping": {
+      "city": "Yogyakarta",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX75826581ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0634",
+        "name": "Chef's knife, 20 cm",
+        "quantity": 2,
+        "unitPrice": 899000
+      },
+      {
+        "sku": "CTS-ELE-0751",
+        "name": "Smart LED bulb, 4-pack",
+        "quantity": 1,
+        "unitPrice": 479000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 2277000,
+      "shippingFee": 0,
+      "total": 2277000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "7233",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100243",
+    "status": "Delivered",
+    "placedAt": "2026-10-31T16:27:00Z",
+    "lastUpdated": "2026-11-03T19:16:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "app",
+    "customer": {
+      "name": "Tomas Tanjung",
+      "email": "tomas.tanjung@example.com",
+      "phone": "+62 21 5550 0354"
+    },
+    "shipping": {
+      "city": "Semarang",
+      "country": "ID",
+      "carrier": "Fabrikam Freight",
+      "trackingNumber": "CX32062777ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-BAG-0520",
+        "name": "Carry-on suitcase, 55 cm",
+        "quantity": 1,
+        "unitPrice": 1750000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1750000,
+      "shippingFee": 0,
+      "total": 1750000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "2025",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100246",
+    "status": "Delivered",
+    "placedAt": "2026-10-29T18:02:00Z",
+    "lastUpdated": "2026-11-01T18:30:00Z",
+    "estimatedDelivery": "2026-11-01",
+    "channel": "app",
+    "customer": {
+      "name": "Kirana Gunawan",
+      "email": "kirana.gunawan@example.com",
+      "phone": "+62 21 5550 0439"
+    },
+    "shipping": {
+      "city": "Jakarta",
+      "country": "ID",
+      "carrier": "Fabrikam Freight",
+      "trackingNumber": "CX44245619ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-SPT-0418",
+        "name": "Running shoes",
+        "quantity": 1,
+        "unitPrice": 1099000
+      },
+      {
+        "sku": "CTS-KIT-0634",
+        "name": "Chef's knife, 20 cm",
+        "quantity": 2,
+        "unitPrice": 899000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 2897000,
+      "shippingFee": 0,
+      "total": 2897000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "1134",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100247",
+    "status": "Shipped",
+    "placedAt": "2026-11-01T09:53:00Z",
+    "lastUpdated": "2026-11-03T13:48:00Z",
+    "estimatedDelivery": "2026-11-06",
+    "channel": "marketplace",
+    "customer": {
+      "name": "Rizky Pratama",
+      "email": "rizky.pratama@example.com",
+      "phone": "+62 21 5550 0389"
+    },
+    "shipping": {
+      "city": "Makassar",
+      "country": "ID",
+      "carrier": "Fabrikam Freight",
+      "trackingNumber": "CX27489139ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0107",
+        "name": "Stainless steel kettle 1.7 L",
+        "quantity": 1,
+        "unitPrice": 459000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 459000,
+      "shippingFee": 25000,
+      "total": 484000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "9433",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100251",
+    "status": "Out for delivery",
+    "placedAt": "2026-10-26T20:01:00Z",
+    "lastUpdated": "2026-11-03T13:06:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "app",
+    "customer": {
+      "name": "Indra Wijaya",
+      "email": "indra.wijaya@example.com",
+      "phone": "+62 21 5550 0251"
+    },
+    "shipping": {
+      "city": "Bandung",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": "CX50355444ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0634",
+        "name": "Chef's knife, 20 cm",
+        "quantity": 2,
+        "unitPrice": 899000
+      },
+      {
+        "sku": "CTS-KIT-0107",
+        "name": "Stainless steel kettle 1.7 L",
+        "quantity": 1,
+        "unitPrice": 459000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 2257000,
+      "shippingFee": 0,
+      "total": 2257000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "2538",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100253",
+    "status": "Delivered",
+    "placedAt": "2026-10-28T11:19:00Z",
+    "lastUpdated": "2026-11-02T18:26:00Z",
+    "estimatedDelivery": "2026-11-02",
+    "channel": "web",
+    "customer": {
+      "name": "Hana Tanjung",
+      "email": "hana.tanjung@example.com",
+      "phone": "+62 21 5550 0994"
+    },
+    "shipping": {
+      "city": "Medan",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX29410332ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0107",
+        "name": "Stainless steel kettle 1.7 L",
+        "quantity": 1,
+        "unitPrice": 459000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 459000,
+      "shippingFee": 25000,
+      "total": 484000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "6445",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100259",
+    "status": "Cancelled",
+    "placedAt": "2026-10-24T14:30:00Z",
+    "lastUpdated": "2026-10-25T13:55:00Z",
+    "estimatedDelivery": null,
+    "channel": "web",
+    "customer": {
+      "name": "Indra Pratama",
+      "email": "indra.pratama@example.com",
+      "phone": "+62 21 5550 0903"
+    },
+    "shipping": {
+      "city": "Jakarta",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": null
+    },
+    "items": [
+      {
+        "sku": "CTS-AUD-0042",
+        "name": "Wireless noise-cancelling headphones",
+        "quantity": 2,
+        "unitPrice": 1899000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 3798000,
+      "shippingFee": 0,
+      "total": 3798000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "7647",
+      "status": "refunded"
+    }
+  },
+  {
+    "id": "ORD-100260",
+    "status": "Shipped",
+    "placedAt": "2026-11-01T11:40:00Z",
+    "lastUpdated": "2026-11-03T19:41:00Z",
+    "estimatedDelivery": "2026-11-05",
+    "channel": "marketplace",
+    "customer": {
+      "name": "Kirana Gunawan",
+      "email": "kirana.gunawan@example.com",
+      "phone": "+62 21 5550 0637"
+    },
+    "shipping": {
+      "city": "Medan",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX98037875ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0634",
+        "name": "Chef's knife, 20 cm",
+        "quantity": 2,
+        "unitPrice": 899000
+      },
+      {
+        "sku": "CTS-BAG-0520",
+        "name": "Carry-on suitcase, 55 cm",
+        "quantity": 1,
+        "unitPrice": 1750000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 3548000,
+      "shippingFee": 0,
+      "total": 3548000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "2244",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100263",
+    "status": "Out for delivery",
+    "placedAt": "2026-10-24T11:39:00Z",
+    "lastUpdated": "2026-11-03T11:51:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "web",
+    "customer": {
+      "name": "Eka Wijaya",
+      "email": "eka.wijaya@example.com",
+      "phone": "+62 21 5550 0492"
+    },
+    "shipping": {
+      "city": "Jakarta",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX19918210ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-OFF-1003",
+        "name": "Ergonomic office chair",
+        "quantity": 2,
+        "unitPrice": 3499000
+      },
+      {
+        "sku": "CTS-BAG-0520",
+        "name": "Carry-on suitcase, 55 cm",
+        "quantity": 2,
+        "unitPrice": 1750000
+      },
+      {
+        "sku": "CTS-AUD-0042",
+        "name": "Wireless noise-cancelling headphones",
+        "quantity": 1,
+        "unitPrice": 1899000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 12397000,
+      "shippingFee": 0,
+      "total": 12397000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "6123",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100273",
+    "status": "Delivered",
+    "placedAt": "2026-10-31T21:07:00Z",
+    "lastUpdated": "2026-11-03T06:54:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "web",
+    "customer": {
+      "name": "Budi Siregar",
+      "email": "budi.siregar@example.com",
+      "phone": "+62 21 5550 0361"
+    },
+    "shipping": {
+      "city": "Jakarta",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX78023915ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-AUD-0042",
+        "name": "Wireless noise-cancelling headphones",
+        "quantity": 1,
+        "unitPrice": 1899000
+      },
+      {
+        "sku": "CTS-ELE-0751",
+        "name": "Smart LED bulb, 4-pack",
+        "quantity": 2,
+        "unitPrice": 479000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 2857000,
+      "shippingFee": 0,
+      "total": 2857000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "6252",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100274",
+    "status": "Shipped",
+    "placedAt": "2026-10-30T13:36:00Z",
+    "lastUpdated": "2026-10-31T07:27:00Z",
+    "estimatedDelivery": "2026-11-04",
+    "channel": "app",
+    "customer": {
+      "name": "Tomas Wijaya",
+      "email": "tomas.wijaya@example.com",
+      "phone": "+62 21 5550 0352"
+    },
+    "shipping": {
+      "city": "Jakarta",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX62045290ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0107",
+        "name": "Stainless steel kettle 1.7 L",
+        "quantity": 2,
+        "unitPrice": 459000
+      },
+      {
+        "sku": "CTS-OFF-1003",
+        "name": "Ergonomic office chair",
+        "quantity": 1,
+        "unitPrice": 3499000
+      },
+      {
+        "sku": "CTS-HOM-0215",
+        "name": "Linen bedding set, queen",
+        "quantity": 1,
+        "unitPrice": 1249000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 5666000,
+      "shippingFee": 0,
+      "total": 5666000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "4266",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100278",
+    "status": "Packed",
+    "placedAt": "2026-10-26T06:06:00Z",
+    "lastUpdated": "2026-10-28T07:00:00Z",
+    "estimatedDelivery": "2026-11-07",
+    "channel": "marketplace",
+    "customer": {
+      "name": "Wulan Pratama",
+      "email": "wulan.pratama@example.com",
+      "phone": "+62 21 5550 0424"
+    },
+    "shipping": {
+      "city": "Yogyakarta",
+      "country": "ID",
+      "carrier": "Fabrikam Freight",
+      "trackingNumber": null
+    },
+    "items": [
+      {
+        "sku": "CTS-TOY-0812",
+        "name": "Wooden building blocks, 120 pieces",
+        "quantity": 1,
+        "unitPrice": 389000
+      },
+      {
+        "sku": "CTS-BAG-0520",
+        "name": "Carry-on suitcase, 55 cm",
+        "quantity": 2,
+        "unitPrice": 1750000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 3889000,
+      "shippingFee": 0,
+      "total": 3889000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "3410",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100283",
+    "status": "Delivered",
+    "placedAt": "2026-10-31T09:16:00Z",
+    "lastUpdated": "2026-11-02T08:09:00Z",
+    "estimatedDelivery": "2026-11-02",
+    "channel": "marketplace",
+    "customer": {
+      "name": "Hana Hidayat",
+      "email": "hana.hidayat@example.com",
+      "phone": "+62 21 5550 0485"
+    },
+    "shipping": {
+      "city": "Medan",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": "CX58704448ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-OFF-1003",
+        "name": "Ergonomic office chair",
+        "quantity": 1,
+        "unitPrice": 3499000
+      },
+      {
+        "sku": "CTS-KIT-0634",
+        "name": "Chef's knife, 20 cm",
+        "quantity": 2,
+        "unitPrice": 899000
+      },
+      {
+        "sku": "CTS-SPT-0419",
+        "name": "Yoga mat, 6 mm",
+        "quantity": 1,
+        "unitPrice": 329000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 5626000,
+      "shippingFee": 0,
+      "total": 5626000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "6745",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100284",
+    "status": "Delivered",
+    "placedAt": "2026-10-26T10:56:00Z",
+    "lastUpdated": "2026-10-28T11:36:00Z",
+    "estimatedDelivery": "2026-10-28",
+    "channel": "app",
+    "customer": {
+      "name": "Fajar Gunawan",
+      "email": "fajar.gunawan@example.com",
+      "phone": "+62 21 5550 0354"
+    },
+    "shipping": {
+      "city": "Bandung",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": "CX17216020ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-ELE-0330",
+        "name": "USB-C charging hub, 7-in-1",
+        "quantity": 2,
+        "unitPrice": 649000
+      },
+      {
+        "sku": "CTS-TOY-0812",
+        "name": "Wooden building blocks, 120 pieces",
+        "quantity": 1,
+        "unitPrice": 389000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1687000,
+      "shippingFee": 0,
+      "total": 1687000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "1842",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100286",
+    "status": "Delivered",
+    "placedAt": "2026-10-27T13:23:00Z",
+    "lastUpdated": "2026-11-01T17:03:00Z",
+    "estimatedDelivery": "2026-11-01",
+    "channel": "web",
+    "customer": {
+      "name": "Wulan Siregar",
+      "email": "wulan.siregar@example.com",
+      "phone": "+62 21 5550 0256"
+    },
+    "shipping": {
+      "city": "Surabaya",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX62988853ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-BAG-0520",
+        "name": "Carry-on suitcase, 55 cm",
+        "quantity": 2,
+        "unitPrice": 1750000
+      },
+      {
+        "sku": "CTS-OFF-1003",
+        "name": "Ergonomic office chair",
+        "quantity": 1,
+        "unitPrice": 3499000
+      },
+      {
+        "sku": "CTS-AUD-0042",
+        "name": "Wireless noise-cancelling headphones",
+        "quantity": 1,
+        "unitPrice": 1899000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 8898000,
+      "shippingFee": 0,
+      "total": 8898000
+    },
+    "payment": {
+      "method": "Visa",
+      "last4": "9532",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100289",
+    "status": "Payment pending",
+    "placedAt": "2026-11-02T15:55:00Z",
+    "lastUpdated": "2026-11-02T18:24:00Z",
+    "estimatedDelivery": null,
+    "channel": "web",
+    "customer": {
+      "name": "Tomas Gunawan",
+      "email": "tomas.gunawan@example.com",
+      "phone": "+62 21 5550 0967"
+    },
+    "shipping": {
+      "city": "Yogyakarta",
+      "country": "ID",
+      "carrier": "Contoso Express",
+      "trackingNumber": null
+    },
+    "items": [
+      {
+        "sku": "CTS-KIT-0634",
+        "name": "Chef's knife, 20 cm",
+        "quantity": 2,
+        "unitPrice": 899000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1798000,
+      "shippingFee": 0,
+      "total": 1798000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "9422",
+      "status": "pending"
+    }
+  },
+  {
+    "id": "ORD-100291",
+    "status": "Shipped",
+    "placedAt": "2026-10-29T17:06:00Z",
+    "lastUpdated": "2026-10-30T15:23:00Z",
+    "estimatedDelivery": "2026-11-05",
+    "channel": "marketplace",
+    "customer": {
+      "name": "Putri Pratama",
+      "email": "putri.pratama@example.com",
+      "phone": "+62 21 5550 0564"
+    },
+    "shipping": {
+      "city": "Jakarta",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX21845819ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-BTY-0905",
+        "name": "Vitamin C serum, 30 ml",
+        "quantity": 1,
+        "unitPrice": 259000
+      },
+      {
+        "sku": "CTS-HOM-0215",
+        "name": "Linen bedding set, queen",
+        "quantity": 2,
+        "unitPrice": 1249000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 2757000,
+      "shippingFee": 0,
+      "total": 2757000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "5855",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100295",
+    "status": "Packed",
+    "placedAt": "2026-11-01T12:36:00Z",
+    "lastUpdated": "2026-11-02T07:49:00Z",
+    "estimatedDelivery": "2026-11-05",
+    "channel": "web",
+    "customer": {
+      "name": "Rizky Siregar",
+      "email": "rizky.siregar@example.com",
+      "phone": "+62 21 5550 0707"
+    },
+    "shipping": {
+      "city": "Medan",
+      "country": "ID",
+      "carrier": "Fabrikam Freight",
+      "trackingNumber": null
+    },
+    "items": [
+      {
+        "sku": "CTS-ELE-0330",
+        "name": "USB-C charging hub, 7-in-1",
+        "quantity": 2,
+        "unitPrice": 649000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 1298000,
+      "shippingFee": 25000,
+      "total": 1323000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "9960",
+      "status": "captured"
+    }
+  },
+  {
+    "id": "ORD-100298",
+    "status": "Out for delivery",
+    "placedAt": "2026-10-28T14:21:00Z",
+    "lastUpdated": "2026-11-03T14:15:00Z",
+    "estimatedDelivery": "2026-11-03",
+    "channel": "marketplace",
+    "customer": {
+      "name": "Kirana Pratama",
+      "email": "kirana.pratama@example.com",
+      "phone": "+62 21 5550 0381"
+    },
+    "shipping": {
+      "city": "Semarang",
+      "country": "ID",
+      "carrier": "Northwind Logistics",
+      "trackingNumber": "CX85089366ID"
+    },
+    "items": [
+      {
+        "sku": "CTS-OFF-1003",
+        "name": "Ergonomic office chair",
+        "quantity": 1,
+        "unitPrice": 3499000
+      },
+      {
+        "sku": "CTS-SPT-0418",
+        "name": "Running shoes",
+        "quantity": 2,
+        "unitPrice": 1099000
+      },
+      {
+        "sku": "CTS-BTY-0905",
+        "name": "Vitamin C serum, 30 ml",
+        "quantity": 1,
+        "unitPrice": 259000
+      }
+    ],
+    "totals": {
+      "currency": "IDR",
+      "subtotal": 5956000,
+      "shippingFee": 0,
+      "total": 5956000
+    },
+    "payment": {
+      "method": "Mastercard",
+      "last4": "9524",
+      "status": "captured"
+    }
+  }
+]

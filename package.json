@@ -1,0 +1,19 @@
+{
+  "name": "contoso-order-desk",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Contoso Order Desk: starter app for the live demo 'From business requirement to production'.",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test",
+    "seed": "node scripts/seed-orders.mjs"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

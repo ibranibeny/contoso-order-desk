@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contoso Order Desk</title>
+  <meta name="description" content="Order Desk helps Contoso customer care agents answer where-is-my-order questions.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="od-skip" href="#main">Skip to content</a>
+
+  <header class="od-topbar">
+    <div class="od-shell od-topbar__inner">
+      <a class="od-brand" href="/" aria-label="Contoso Order Desk home">
+        <span class="od-brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg>
+        </span>
+        <span class="od-brand__text">Contoso Order Desk<small>Customer care</small></span>
+      </a>
+      <span class="od-pill">Agent workspace</span>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="od-hero">
+      <div class="od-shell">
+        <p class="od-eyebrow">Customer care</p>
+        <h1>Where is my order?</h1>
+        <p class="od-lede">One place for agents to answer order questions. Order lookup is being built and will appear on this page.</p>
+      </div>
+    </section>
+
+    <div class="od-shell od-stack">
+      <section class="od-card" aria-labelledby="coming-title">
+        <h2 id="coming-title" class="od-card__title">Order lookup is on its way</h2>
+        <p class="od-hint">Agents will type an order number and see the order's status and estimated delivery date.</p>
+        <div class="od-feature-grid" style="margin-top: 20px;">
+          <div class="od-feature">
+            <div class="od-feature__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            </div>
+            <h2>Status at a glance</h2>
+            <p>From payment to delivery, with a clear step-by-step tracker.</p>
+          </div>
+          <div class="od-feature">
+            <div class="od-feature__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+            </div>
+            <h2>Estimated delivery</h2>
+            <p>The date the customer can expect, and when the order last changed.</p>
+          </div>
+          <div class="od-feature">
+            <div class="od-feature__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+            <h2>Private by design</h2>
+            <p>Agents see delivery information only. Payment details stay hidden.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="od-footer">
+    <div class="od-shell">
+      <span>Contoso Order Desk · synthetic demo data only</span>
+      <span>Service status: <a href="/health">/health</a></span>
+    </div>
+  </footer>
+</body>
+</html>

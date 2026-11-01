@@ -1,0 +1,7 @@
+{
+  "editor.fontSize": 18,
+  "terminal.integrated.fontSize": 16,
+  "editor.minimap.enabled": false,
+  "editor.wordWrap": "on",
+  "files.exclude": { "node_modules": true }
+}

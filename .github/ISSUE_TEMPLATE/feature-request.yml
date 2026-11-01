@@ -1,0 +1,51 @@
+name: Feature request
+description: Propose a new capability for Contoso Order Desk.
+title: "[Feature]: "
+labels: ["enhancement"]
+# scripts/configure-repo.sh fills in the two lines below for your repository.
+# type: feature            # needs the "feature" issue type (organization-owned repositories only)
+# projects: ["OWNER/1"]    # the person opening the issue needs write access to this project
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the business need. Copilot and reviewers work best with clear, testable acceptance criteria.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Business problem
+      description: Who is affected and what slows them down today?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+      description: What can users do when this is done?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: One testable statement per line.
+      placeholder: |
+        - Given a valid order number, the agent sees the status and estimated delivery date
+        - An unknown order number shows a clear "not found" message
+    validations:
+      required: true
+  - type: dropdown
+    id: data
+    attributes:
+      label: Data sensitivity
+      options:
+        - No customer data
+        - Customer contact data (personal data)
+        - Payment data
+    validations:
+      required: true
+  - type: textarea
+    id: nfr
+    attributes:
+      label: Non-functional requirements
+      description: Performance, security, accessibility and audit needs.
