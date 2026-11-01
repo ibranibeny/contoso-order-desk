@@ -31,11 +31,56 @@ Details, licences and the two-person setup are in the [guide](docs/LIVE-DEMO-GUI
 ```bash
 npm ci
 npm test
-npm start                    # http://localhost:3000 shows the placeholder page (the demo starts here)
+npm start                    # http://localhost:3000 shows the agent lookup page
 git switch solution && npm start   # the finished Order Desk: try ORD-100232, ORD-999999 and 12345
 ```
 
 Node.js 24 and Express 5. Tests use the built-in `node --test` runner.
+
+### Agent lookup page
+
+The page uses `GET /api/orders/:orderId`: 200 returns only `id`, `status`,
+`lastUpdated` and `estimatedDelivery`; 400 reports invalid input and 404 reports
+“Order not found”. The API is delivered separately and is not yet present in this
+starter server. No server routes are changed by the page feature.
+
+Submit with Enter or the **Look up order** button. IDs must match `ORD-` followed
+by six digits exactly. Each submission clears previous results; service/network
+errors show a retry message, and requests time out after ten seconds. Dates are
+displayed in UTC, with “Not available” for missing or invalid dates. Results and
+errors share a polite live region. Only the four delivery fields are rendered,
+using text, and nothing is stored in browser storage or logged by the page.
+
+Auditing remains dependent on the linked API/audit work: the supplied GET
+contract has no way to record client-rejected input or network failures. Those
+attempts are **not audited by this page**. Before accepting the parent feature,
+integrate a trusted-identity audit contract covering every submission (including
+empty/invalid input and failures), audit retrieval and surfaced audit-write
+failures. Do not substitute a client-editable identity or a browser-only log.
+
+#### Request-to-render verification
+
+On 1 November 2026, the page was checked on a Linux x64 runner (four AMD EPYC
+7763 vCPUs), Node.js 24.22.1, Express 5 and headless Chrome 156, at a 780 × 493
+viewport with no throttling. A temporary localhost Express contract fixture
+served the unchanged page and selected only the four allowed fields from
+`data/orders.json`, returning JSON 404 for unknown IDs.
+
+Ten sequential submissions each of `ORD-100200` and `ORD-999999` were measured
+with `performance.now()` immediately before `form.requestSubmit()`. A
+`MutationObserver` waited for visible results or “Order not found”, followed by
+two `requestAnimationFrame` callbacks to include a paint opportunity.
+
+| Lookup | Mean | Maximum | Target |
+|---|---:|---:|---:|
+| Known order | 32.2 ms | 33.4 ms | < 1,000 ms |
+| Unknown order | 33.3 ms | 33.4 ms | < 1,000 ms |
+
+This verifies the page with local HTTP transport, **not** production API/audit
+latency. Repeat the same procedure against the integrated API in the deployment
+environment before claiming the parent feature's end-to-end performance target.
+Keyboard submission, empty-input feedback and stale-result removal were also
+checked in the browser.
 
 ## Branches
 

@@ -1,0 +1,5 @@
+#lookup-form { margin-top: 20px; }
+.od-privacy { margin-top: 16px; }
+#lookup-feedback > .od-alert { margin: 0; }
+#order-results dd { margin: 0; }
+#lookup-feedback [hidden] { display: none; }
