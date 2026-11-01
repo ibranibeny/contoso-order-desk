@@ -1,0 +1,29 @@
+/* Page-specific styles for the order lookup page. Shared components live in styles.css. */
+
+.lookup-card { display: grid; gap: 16px; }
+.lookup-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-height: 32px; }
+.lookup-chips__label { font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--od-muted); margin-right: 2px; }
+
+.lookup-result:empty { display: none; }
+
+.result-card { display: grid; gap: 20px; }
+.result-card__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.result-card__who { display: grid; gap: 2px; }
+.result-card__id { display: flex; align-items: center; gap: 10px; }
+.result-card__number { font-family: var(--od-mono); font-size: 26px; font-weight: 700; letter-spacing: 0.01em; }
+.result-card__privacy {
+  display: flex; align-items: center; gap: 8px; margin: 0; padding-top: 14px;
+  border-top: 1px dashed var(--od-line); font-size: 13.5px; color: var(--od-muted);
+}
+.result-card__privacy svg { width: 16px; height: 16px; flex: none; color: var(--od-ok); }
+.result-card__cancelled { box-shadow: none; }
+.od-icon-btn.is-copied { color: var(--od-ok); border-color: var(--od-ok); }
+
+.skeleton-line { height: 14px; width: 60%; }
+.skeleton-line--title { height: 30px; width: 220px; }
+.skeleton-pill { height: 32px; width: 140px; border-radius: 999px; }
+.skeleton-block { height: 96px; }
+
+@media (max-width: 640px) {
+  .result-card__number { font-size: 22px; }
+}
