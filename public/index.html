@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Contoso Order Desk</title>
-  <meta name="description" content="Order Desk helps Contoso customer care agents answer where-is-my-order questions.">
+  <title>Order lookup · Contoso Order Desk</title>
+  <meta name="description" content="Look up an order's status and estimated delivery date.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="app.css">
+  <script type="module" src="app.js"></script>
 </head>
 <body>
-  <a class="od-skip" href="#main">Skip to content</a>
+  <a class="od-skip" href="#order-id">Skip to order lookup</a>
 
   <header class="od-topbar">
     <div class="od-shell od-topbar__inner">
@@ -28,38 +30,28 @@
       <div class="od-shell">
         <p class="od-eyebrow">Customer care</p>
         <h1>Where is my order?</h1>
-        <p class="od-lede">One place for agents to answer order questions. Order lookup is being built and will appear on this page.</p>
+        <p class="od-lede">Type the order number the customer gives you to see the order's status and estimated delivery.</p>
       </div>
     </section>
 
     <div class="od-shell od-stack">
-      <section class="od-card" aria-labelledby="coming-title">
-        <h2 id="coming-title" class="od-card__title">Order lookup is on its way</h2>
-        <p class="od-hint">Agents will type an order number and see the order's status and estimated delivery date.</p>
-        <div class="od-feature-grid" style="margin-top: 20px;">
-          <div class="od-feature">
-            <div class="od-feature__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            </div>
-            <h2>Status at a glance</h2>
-            <p>From payment to delivery, with a clear step-by-step tracker.</p>
+      <section class="od-card lookup-card" aria-labelledby="lookup-title">
+        <h2 id="lookup-title" class="od-visually-hidden">Order lookup</h2>
+        <form id="lookup-form" class="od-field" novalidate>
+          <label for="order-id">Order number</label>
+          <div class="od-input-group">
+            <span class="od-input-group__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/></svg>
+            </span>
+            <input id="order-id" name="order" class="od-input" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ORD-123456" aria-describedby="order-hint">
+            <button id="lookup-button" class="od-btn od-btn--primary" type="submit">Look up</button>
           </div>
-          <div class="od-feature">
-            <div class="od-feature__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
-            </div>
-            <h2>Estimated delivery</h2>
-            <p>The date the customer can expect, and when the order last changed.</p>
-          </div>
-          <div class="od-feature">
-            <div class="od-feature__icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6z"/><path d="m9 12 2 2 4-4"/></svg>
-            </div>
-            <h2>Private by design</h2>
-            <p>Agents see delivery information only. Payment details stay hidden.</p>
-          </div>
-        </div>
+          <p id="order-hint" class="od-hint">ORD- followed by six digits. Press <kbd class="od-kbd">/</kbd> to jump here.</p>
+        </form>
+        <div id="chips" class="lookup-chips" aria-label="Order numbers to try"></div>
       </section>
+
+      <section id="result" class="lookup-result" aria-live="polite" aria-busy="false"></section>
     </div>
   </main>
 
