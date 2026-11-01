@@ -5,8 +5,9 @@
 # Needs: the GitHub CLI signed in (as a repository admin to see every check), and curl.
 # Azure: if the Azure CLI is signed in (az login, or Azure Cloud Shell), the script finds everything by itself, so there
 # is nothing to pass: the web app named in the AZURE_WEBAPP_NAME variable (or the resource group that azure-setup.sh
-# tags workload=contoso-order-desk), its subscription (the current one first, then the others you can see), resource
-# group, plan, host name, and the identity GitHub Actions signs in as. Without the Azure CLI it only checks /health.
+# tags workload=contoso-order-desk), its subscription (the current one first; only if it is not there, up to 30 other
+# enabled ones you can see), resource group, plan, host name, and the identity GitHub Actions signs in as. Without the
+# Azure CLI it only checks /health.
 # GitHub never shows secret values: the script lists every identity that can deploy and every credential it trusts, and
 # reports the latest production deployment, which shows that sign-in worked at that time.
 #
@@ -96,7 +97,7 @@ pr_state demo/add-date-helper dependency-review "vulnerable dependency"
 step "Azure"
 HOST=''
 is_true() { case "$1" in true|True|TRUE) return 0 ;; *) return 1 ;; esac; }
-azq() { az "$@" 2>/dev/null | tr -d '\r'; }
+azq() { az "$@" 2>/dev/null </dev/null | tr -d '\r'; }   # no stdin: the Windows CLI under WSL would eat a while-read loop's input
 # Rows of fields split on \037, so empty values keep their place. The Azure CLI prints a flat list one value per line
 # and a list of lists one row per line, so row queries are written [[a, b]] (one object) or [].[a, b] (lists).
 azf() { azq "$@" -o tsv | tr '\t' '\037'; }   # pipefail is on: a failed az call fails the pipeline, not an empty answer
@@ -133,18 +134,33 @@ elif ! az account show -o none >/dev/null 2>&1; then
 else
   CUR_SUB=$(azq account show --query id -o tsv)
   info "Signed in to Azure as $(azq account show --query user.name -o tsv) · current subscription $(azq account show --query name -o tsv)"
-  # Every enabled subscription is searched, 6 at a time, so a second match anywhere is noticed before anything is chosen.
+  # The current subscription first: azure-setup.sh created the web app there. Only if it is not found there are the
+  # other enabled subscriptions searched, up to MAX_SUBS of them, 6 at a time. An az profile can hold many accounts and
+  # tenants (one with 85 subscriptions took minutes per batch), so they are not searched while the answer is at hand.
+  MAX_SUBS=30
   SUBMAP=$(azf account list --query "[?state=='Enabled'].[id, name]")
   sub_name() { printf '%s\n' "$SUBMAP" | awk -F$'\037' -v id="$1" '$1 == id { print $2; exit }'; }
-  SUBS=$(printf '%s\n' "$SUBMAP" | cut -d$'\037' -f1 | grep .)
-  info "Looking for the web app in $(printf '%s\n' "$SUBS" | grep -c .) enabled subscription(s)"
+  ALL_OTHER=$(printf '%s\n' "$SUBMAP" | cut -d$'\037' -f1 | grep . | grep -v -x -F "$CUR_SUB")
+  N_OTHER=$(printf '%s' "$ALL_OTHER" | grep -c .)
+  OTHER_SUBS=$(printf '%s\n' "$ALL_OTHER" | head -n "$MAX_SUBS")
   SEARCH_DIR=$(mktemp -d); trap 'rm -rf "$SEARCH_DIR"' EXIT
-  i=0
-  for s in $SUBS; do
-    ( find_apps "$s" > "$SEARCH_DIR/$s.out"; echo $? > "$SEARCH_DIR/$s.rc" ) &
-    i=$((i + 1)); [ $((i % 6)) -ne 0 ] || wait
-  done
-  wait
+  search_subs() { # subscription IDs -> $SEARCH_DIR/<id>.out (rows) and .rc (0 = searched)
+    local s i=0
+    for s in "$@"; do
+      ( find_apps "$s" > "$SEARCH_DIR/$s.out"; echo $? > "$SEARCH_DIR/$s.rc" ) &
+      i=$((i + 1)); [ $((i % 6)) -ne 0 ] || wait
+    done
+    wait
+  }
+  SUBS=$CUR_SUB
+  search_subs "$CUR_SUB"
+  if ! grep -q . "$SEARCH_DIR/$CUR_SUB.out" 2>/dev/null && [ "$N_OTHER" -gt 0 ]; then
+    if [ "$N_OTHER" -gt "$MAX_SUBS" ]; then info "Not in the current subscription; looking in the first $MAX_SUBS of $N_OTHER other enabled subscriptions"
+    else info "Not in the current subscription; looking in $N_OTHER other enabled subscription(s)"; fi
+    # shellcheck disable=SC2086
+    search_subs $OTHER_SUBS
+    SUBS=$(printf '%s\n%s\n' "$CUR_SUB" "$OTHER_SUBS" | grep .)
+  fi
   FOUND=$(cat "$SEARCH_DIR"/*.out 2>/dev/null | grep .)
   FAILED=''
   for s in $SUBS; do [ "$(cat "$SEARCH_DIR/$s.rc" 2>/dev/null)" = "0" ] || FAILED="$FAILED, $(sub_name "$s")"; done
@@ -226,7 +242,7 @@ else
       if ! DIRECT=$(azq role assignment list --subscription "$SUB" --scope "$WEBAPP_ID" --role "Website Contributor" --query "[?principalType=='ServicePrincipal'].principalId" -o tsv); then
         DIRECT=''; ROLES_UNREADABLE=1
       else ROLES_UNREADABLE=''; fi
-      SEARCH="$SUB $(printf '%s\n' "$SUBS" | grep -v "^$SUB\$" | tr '\n' ' ')"
+      SEARCH="$SUB $(printf '%s\n%s\n' "$CUR_SUB" "$OTHER_SUBS" | grep . | grep -v -x -F "$SUB" | tr '\n' ' ')"
       for p in $DIRECT; do
         N_SP=$((N_SP + 1)); row=''
         for s in $SEARCH; do
@@ -241,7 +257,8 @@ else
       if [ -z "$ROLES_UNREADABLE" ] && INHERITED=$(azq role assignment list --subscription "$SUB" --scope "$WEBAPP_ID" --include-inherited \
           --query "[?principalType=='ServicePrincipal' && (roleDefinitionName=='Owner' || roleDefinitionName=='Contributor' || roleDefinitionName=='Website Contributor')].principalId" -o tsv); then
         BROADER=$(printf '%s\n' "$INHERITED" | grep . | sort -u | grep -v -x -F "$(printf '%s\n' $DIRECT)" | grep -c .)
-        if [ "${BROADER:-0}" != "0" ]; then warn "$BROADER other service principal(s) can deploy through Owner, Contributor or Website Contributor on a broader scope (resource group, subscription or management group); not inspected here"
+        # Information, not a warning: in shared or managed subscriptions these are platform identities the demo cannot change.
+        if [ "${BROADER:-0}" != "0" ]; then info "$BROADER other service principal(s) can deploy through Owner, Contributor or Website Contributor on a broader scope (resource group, subscription or management group); not inspected here"
         else info "No other service principal has Owner, Contributor or Website Contributor on this web app or above (role grants to groups are not expanded)"; fi
       fi
       N_IDS=$(printf '%s' "$IDS" | grep -c .)

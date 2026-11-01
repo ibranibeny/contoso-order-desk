@@ -8,6 +8,12 @@ else
   BOLD=''; GREEN=''; YELLOW=''; RED=''; DIM=''; RESET=''
 fi
 
+# In WSL, `az` can resolve to the Windows Azure CLI. It ends every output line with a carriage return, which
+# $(az … -o tsv) would carry into secrets and comparisons, and it reads stdin, which ends `while read` loops early.
+case "$(command -v az 2>/dev/null)" in
+  /mnt/[a-z]/*|*/CLI2/wbin/az) az() { command az "$@" </dev/null | tr -d '\r'; return "${PIPESTATUS[0]}"; } ;;
+esac
+
 step() { printf '\n%s==> %s%s\n' "$BOLD" "$*" "$RESET"; }
 ok()   { printf '  %s✓%s %s\n' "$GREEN" "$RESET" "$*"; }
 warn() { printf '  %s!%s %s\n' "$YELLOW" "$RESET" "$*"; WARNINGS=$((${WARNINGS:-0} + 1)); }
