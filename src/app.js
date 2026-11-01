@@ -22,5 +22,9 @@ app.get('/orders/lookup', (req, res) => {
   if (!order) {
     return res.status(404).json({ error: 'Order not found' });
   }
-  res.json(order);
+  res.json({
+    id: order.id,
+    status: order.status,
+    estimatedDelivery: order.estimatedDelivery
+  });
 });
