@@ -1,0 +1,72 @@
+name: CI/CD
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read            # least privilege by default; raise per job
+
+env:
+  NODE_VERSION: '24.x'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm test
+      - name: Keep only production dependencies
+        run: npm prune --omit=dev
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v7
+        with:
+          name: node-app
+          path: |
+            .
+            !.git
+
+  deploy:
+    # Runs for main only, and only after scripts/azure-setup.sh has set the AZURE_WEBAPP_NAME variable.
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.AZURE_WEBAPP_NAME != ''
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: true
+    permissions:
+      id-token: write       # lets this job request an OIDC token; grants no other access
+      contents: read
+    environment:
+      name: production      # required reviewers are configured on this environment
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v8
+        with:
+          name: node-app
+      # Sign-in and deploy steps follow Microsoft Learn "Deploy to Azure App Service by using GitHub Actions"
+      # (OpenID Connect). Its examples show azure/login@v2; v3 has the same inputs and runs on Node.js 24.
+      - name: Az CLI login (OIDC, no stored password)
+        uses: azure/login@v3
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          package: .
+      - name: Smoke test
+        run: curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-all-errors "${{ steps.deploy-to-webapp.outputs.webapp-url }}/health"
