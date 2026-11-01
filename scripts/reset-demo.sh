@@ -9,7 +9,7 @@
 #   YES=1 scripts/reset-demo.sh      # no questions
 #
 # Afterwards: run scripts/prepare-security-prs.sh again, and optionally redeploy the starting point
-# (Actions > CI/CD > Run workflow on main; the approver approves the deployment).
+# (Actions > CI/CD > Run workflow on main, then approve the deployment).
 # Needs: gh signed in as a repository admin.
 set -euo pipefail
 cd "$(dirname "$0")/.."

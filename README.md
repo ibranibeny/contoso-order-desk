@@ -20,8 +20,8 @@ Screenshots are taken automatically from the `solution` branch, with the demo da
 ## Run it in four steps
 
 1. **Create your copy:** **Use this template → Create a new repository**, and tick **Include all branches**.
-2. **Configure GitHub:** `APPROVER=<second-person> scripts/github-setup.sh` (settings, security, environment, ruleset, project).
-3. **Create Azure:** `scripts/azure-setup.sh` in Azure Cloud Shell (App Service, managed identity with OIDC, secrets), then the approver approves the first deployment.
+2. **Configure GitHub:** `scripts/github-setup.sh` (settings, security, environment, ruleset, project). One account by default: you approve the deployment yourself. With a second person: `APPROVER=<second-person> scripts/github-setup.sh`.
+3. **Create Azure:** `scripts/azure-setup.sh` in Azure Cloud Shell (App Service, managed identity with OIDC, secrets), then approve the first deployment (you, or the approver).
 4. **Before each session:** `scripts/prepare-security-prs.sh`, then `scripts/preflight.sh`. Afterwards: `scripts/reset-demo.sh`.
 
 Details, licences and the two-person setup are in the [guide](docs/LIVE-DEMO-GUIDE.md#1-what-you-need).
@@ -52,7 +52,7 @@ Node.js 24 and Express 5. Tests use the built-in `node --test` runner.
 
 | Script | When | What it does |
 |---|---|---|
-| `scripts/github-setup.sh` | Once | Repository settings, approver access, project, CODEOWNERS, security features, `production` environment, ruleset, `demo-start` tag |
+| `scripts/github-setup.sh` | Once | Repository settings, approver access (two people only), project, CODEOWNERS, security features, `production` environment, ruleset, `demo-start` tag |
 | `scripts/azure-setup.sh` | Once (Cloud Shell) | App Service (Linux, Node.js 24), Application Insights, user-assigned managed identity with a federated credential for the `production` environment, environment secrets, first deployment |
 | `scripts/prepare-security-prs.sh` | 60 min before | Opens the two security pull requests from the current main |
 | `scripts/preflight.sh` | 30 min before | Read-only readiness check |

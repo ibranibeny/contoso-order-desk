@@ -169,7 +169,7 @@ ok "Variable AZURE_WEBAPP_NAME=$APP (the deploy job is skipped while it is empty
 HOST=$(az webapp show -g "$RG" -n "$APP" --query defaultHostName -o tsv)
 if [ "$DEPLOY" = "1" ]; then
   gh workflow run ci-cd.yml -R "$REPO" --ref main >/dev/null \
-    && ok "Started the first CI/CD run on main. The approver approves the 'production' deployment in the Actions tab." \
+    && ok "Started the first CI/CD run on main. Approve the 'production' deployment in the Actions tab (you with one account, otherwise the approver)." \
     || warn "Could not start CI/CD. Run it from the Actions tab (CI/CD > Run workflow)."
 fi
 

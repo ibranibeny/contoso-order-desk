@@ -4,10 +4,15 @@
 # Run it inside a clone of YOUR copy of the repository (created with "Use this template"),
 # on an up-to-date main branch with no uncommitted changes:
 #
-#   APPROVER=<github-username-of-the-approver> scripts/github-setup.sh
+#   scripts/github-setup.sh                                              # one account (the default)
+#   APPROVER=<github-username-of-the-approver> scripts/github-setup.sh   # two people
 #
 # Optional settings (environment variables):
-#   APPROVER         Required. The second person: code owner, pull request reviewer and production approver.
+#   APPROVER         A second person: code owner, pull request reviewer and production approver. Not set, or set to
+#                    your own user name: one account runs the whole demo. Pull requests then need no approving review
+#                    (GitHub does not count an approval of your own pull request, or of one you asked Copilot for);
+#                    the checks, CodeQL, Copilot code review and resolved conversations still gate the merge. You are
+#                    the code owner and approve the production deployment yourself (Prevent self-review off).
 #   CODEOWNERS_TEAM  Organization repositories only: a team such as @contoso/order-desk-maintainers to use in
 #                    CODEOWNERS instead of the approver.
 #   PROJECT          "new" (default) creates or reuses a project called "Order Desk"; "OWNER/NUMBER" uses an
@@ -31,18 +36,25 @@ need node
 
 resolve_repo
 require_admin
-: "${APPROVER:?Set APPROVER to the GitHub username of the second person, for example APPROVER=octocat}"
+APPROVER=${APPROVER:-}
 APPROVER=${APPROVER#@}
 PROJECT=${PROJECT:-new}
 ME=$(gh api user --jq .login)
+APPROVER=${APPROVER:-$ME}
+# One account when APPROVER is you (GitHub user names are not case-sensitive).
+SOLO=''
+[ "$(printf '%s' "$APPROVER" | tr '[:upper:]' '[:lower:]')" != "$(printf '%s' "$ME" | tr '[:upper:]' '[:lower:]')" ] || { SOLO=1; APPROVER=$ME; }
 OWNER_TYPE=$(gh api "repos/$REPO" --jq .owner.type)
 VISIBILITY=$(gh api "repos/$REPO" --jq .visibility)
 APPROVER_ID=$(gh api "users/$APPROVER" --jq .id 2>/dev/null) || die "GitHub user '$APPROVER' was not found."
-[ "$APPROVER" != "$ME" ] || die "APPROVER must be a different person from you ($ME). The platform stops people approving their own work."
 
 git remote get-url origin | grep -qi "$REPO" || die "This clone's origin is not $REPO. Run the script inside a clone of $REPO."
 
-step "Setting up $REPO ($VISIBILITY, owned by a $OWNER_TYPE) with approver @$APPROVER"
+if [ -n "$SOLO" ]; then
+  step "Setting up $REPO ($VISIBILITY, owned by a $OWNER_TYPE) for one account: @$ME is code owner and production approver"
+else
+  step "Setting up $REPO ($VISIBILITY, owned by a $OWNER_TYPE) with approver @$APPROVER"
+fi
 confirm "This changes repository settings, security features, the production environment and the main branch. Continue?"
 
 # --------------------------------------------------------------------------------------------
@@ -53,7 +65,9 @@ ok "Pull requests merge with squash; merged branches are deleted"
 
 # --------------------------------------------------------------------------------------------
 step "2/9 Write access for the approver"
-if gh api "repos/$REPO/collaborators/$APPROVER" --silent >/dev/null 2>&1; then
+if [ -n "$SOLO" ]; then
+  ok "One account: nobody to invite"
+elif gh api "repos/$REPO/collaborators/$APPROVER" --silent >/dev/null 2>&1; then
   ok "@$APPROVER already has access"
 else
   gh api -X PUT "repos/$REPO/collaborators/$APPROVER" -f permission=push --silent \
@@ -94,9 +108,14 @@ fi
 # --------------------------------------------------------------------------------------------
 step "4/9 Code owners, the feature request form and the demo data"
 CODE_OWNER=${CODEOWNERS_TEAM:-@$APPROVER}
+if [ -n "$SOLO" ]; then
+  OWNERS_RULE='# One account: pull requests need no approving review; checks, CodeQL, Copilot code review and resolved conversations gate the merge (see the "Protect main" ruleset).'
+else
+  OWNERS_RULE='# Every pull request to main needs a review from a code owner (see the "Protect main" ruleset).'
+fi
 cat > .github/CODEOWNERS <<CODEOWNERS
 # Code owners for Contoso Order Desk (written by scripts/github-setup.sh).
-# Every pull request to main needs a review from a code owner (see the "Protect main" ruleset).
+$OWNERS_RULE
 *                     $CODE_OWNER
 /.github/             $CODE_OWNER
 /.github/CODEOWNERS   $CODE_OWNER
@@ -143,12 +162,16 @@ gh api -X PATCH "repos/$REPO/code-scanning/default-setup" -f state=configured -f
 
 # --------------------------------------------------------------------------------------------
 step "6/9 Environment 'production': approval by @$APPROVER, main branch only"
-ENV_BODY=$(printf '{"wait_timer":0,"prevent_self_review":true,"reviewers":[{"type":"User","id":%s}],"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}' "$APPROVER_ID")
+# Prevent self-review stops whoever triggered a run from approving its deployment: with one account that is you, so it is off.
+if [ -n "$SOLO" ]; then SELF_REVIEW=false; else SELF_REVIEW=true; fi
+ENV_BODY=$(printf '{"wait_timer":0,"prevent_self_review":%s,"reviewers":[{"type":"User","id":%s}],"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}' "$SELF_REVIEW" "$APPROVER_ID")
 if echo "$ENV_BODY" | gh api -X PUT "repos/$REPO/environments/production" --input - --silent 2>/tmp/order-desk-env.err; then
-  ok "Required reviewer @$APPROVER, prevent self-review on"
+  if [ -n "$SOLO" ]; then ok "Required reviewer @$APPROVER (you), prevent self-review off: you approve your own deployments"
+  else ok "Required reviewer @$APPROVER, prevent self-review on"; fi
 else
   warn "Could not set the required reviewer: $(head -c 300 /tmp/order-desk-env.err)"
-  info "Private repositories need GitHub Enterprise (or Team for organizations) for required reviewers; on Free and Pro they work only in public repositories. The approver must also have accepted the invitation."
+  info "Private repositories need GitHub Enterprise (or Team for organizations) for required reviewers; on Free and Pro they work only in public repositories."
+  [ -n "$SOLO" ] || info "The approver must also have accepted the invitation."
   echo '{"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}' \
     | gh api -X PUT "repos/$REPO/environments/production" --input - --silent
 fi
@@ -165,11 +188,16 @@ if [ "${SKIP_RULESET:-0}" = "1" ]; then
   info "Skipped (SKIP_RULESET=1)"
 else
   # Tries the full ruleset first, then without the rules an account may not support.
+  # One account: no approving review and no code-owner review, because nobody else could give them.
   make_ruleset() {
-    DROP="$1" node -e '
+    SOLO="$SOLO" DROP="$1" node -e '
       const r = JSON.parse(require("fs").readFileSync("scripts/rulesets/protect-main.json", "utf8"));
       const drop = (process.env.DROP || "").split(",").filter(Boolean);
       r.rules = r.rules.filter((rule) => !drop.includes(rule.type));
+      if (process.env.SOLO) for (const rule of r.rules) if (rule.type === "pull_request") {
+        rule.parameters.required_approving_review_count = 0;
+        rule.parameters.require_code_owner_review = false;
+      }
       if (drop.includes("allowed_merge_methods")) {
         for (const rule of r.rules) if (rule.parameters) delete rule.parameters.allowed_merge_methods;
       }
@@ -185,7 +213,8 @@ else
     fi
     if [ -n "$APPLIED" ]; then
       if [ -z "$DROP" ]; then
-        ok "Pull request with 1 code-owner approval, checks 'build' and 'dependency-review', CodeQL results, automatic Copilot code review"
+        if [ -n "$SOLO" ]; then ok "Pull request without approval (one account), checks 'build' and 'dependency-review', CodeQL results, automatic Copilot code review"
+        else ok "Pull request with 1 code-owner approval, checks 'build' and 'dependency-review', CodeQL results, automatic Copilot code review"; fi
       else
         ok "Ruleset created without: $DROP"
         warn "Add the missing rule(s) in Settings > Rules > Rulesets > Protect main (for example 'Automatically request Copilot code review')."
