@@ -69,8 +69,15 @@ else
     [ "$(gh api "repos/$REPO/environments/production" --jq '[.protection_rules[]? | select(.type == "required_reviewers") | .prevent_self_review] | any' 2>/dev/null)" != "true" ] \
       || warn "You are the only reviewer of 'production' and Prevent self-review is on: GitHub does not let you approve a deployment you started -> scripts/github-setup.sh without APPROVER (one account)"
     if [ -n "$RULESET" ]; then
-      APPROVALS=$(gh api "repos/$REPO/rulesets/$RULESET" --jq '[.rules[] | select(.type == "pull_request") | .parameters.required_approving_review_count] | max // 0' 2>/dev/null)
-      [ "${APPROVALS:-0}" = "0" ] || warn "Pull requests need $APPROVALS approval(s), but GitHub does not count yours on your own pull request or on one you asked Copilot for -> a second person approves, or scripts/github-setup.sh without APPROVER (one account)"
+      # An approving review is needed when the count is above 0, and also with a count of 0 when the ruleset requires
+      # review from Code Owners or approval of the most recent push.
+      read -r N_APPROVALS CODE_OWNER_REVIEW LAST_PUSH_APPROVAL <<< "$(gh api "repos/$REPO/rulesets/$RULESET" \
+        --jq '[.rules[] | select(.type == "pull_request") | .parameters][0] // {} | "\(.required_approving_review_count // 0) \(.require_code_owner_review // false) \(.require_last_push_approval // false)"' 2>/dev/null)"
+      NEEDS=''
+      [ "${N_APPROVALS:-0}" = "0" ] || NEEDS="$N_APPROVALS approval(s)"
+      [ "$CODE_OWNER_REVIEW" != "true" ] || NEEDS="${NEEDS:+$NEEDS, }review from Code Owners"
+      [ "$LAST_PUSH_APPROVAL" != "true" ] || NEEDS="${NEEDS:+$NEEDS, }approval of the most recent push"
+      [ -z "$NEEDS" ] || warn "Pull requests need $NEEDS, but GitHub does not count your approval of your own pull request or of one you asked Copilot for -> a second person approves, or scripts/github-setup.sh without APPROVER (one account)"
     fi
   fi
 fi

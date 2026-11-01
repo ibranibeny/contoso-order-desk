@@ -46,6 +46,11 @@ SOLO=''
 [ "$(printf '%s' "$APPROVER" | tr '[:upper:]' '[:lower:]')" != "$(printf '%s' "$ME" | tr '[:upper:]' '[:lower:]')" ] || { SOLO=1; APPROVER=$ME; }
 OWNER_TYPE=$(gh api "repos/$REPO" --jq .owner.type)
 VISIBILITY=$(gh api "repos/$REPO" --jq .visibility)
+# Teams and issue types exist only in organizations: refuse them for a personal repository before anything changes.
+if [ "$OWNER_TYPE" != "Organization" ]; then
+  [ -z "${CODEOWNERS_TEAM:-}" ] || die "CODEOWNERS_TEAM is for repositories owned by an organization; $REPO is owned by a user, which has no teams. Run the script without CODEOWNERS_TEAM: you become the code owner."
+  [ -z "${ISSUE_TYPE:-}" ] || die "ISSUE_TYPE is for repositories owned by an organization with issue types; $REPO is owned by a user. Run the script without ISSUE_TYPE: the form still sets the label and the project."
+fi
 APPROVER_ID=$(gh api "users/$APPROVER" --jq .id 2>/dev/null) || die "GitHub user '$APPROVER' was not found."
 
 git remote get-url origin | grep -qi "$REPO" || die "This clone's origin is not $REPO. Run the script inside a clone of $REPO."
