@@ -35,6 +35,18 @@ resolve_repo() {
   NAME=${REPO#*/}
 }
 
+# git needs a name and an e-mail address to commit. Azure Cloud Shell and a fresh WSL have neither: use the signed-in
+# GitHub CLI account and its GitHub no-reply address, for this clone only (global git settings are not touched).
+ensure_git_identity() {
+  if git config user.name >/dev/null 2>&1 && git config user.email >/dev/null 2>&1; then return 0; fi
+  local login id
+  login=$(gh api user --jq .login) || die "Cannot read your GitHub user with the GitHub CLI."
+  id=$(gh api user --jq .id)
+  git config user.name >/dev/null 2>&1 || git config user.name "$login"
+  git config user.email >/dev/null 2>&1 || git config user.email "$id+$login@users.noreply.github.com"
+  info "Commits from this clone use $(git config user.name) <$(git config user.email)> (set by git config in this clone)"
+}
+
 require_admin() {
   [ "$(gh api "repos/$REPO" --jq .permissions.admin)" = "true" ] \
     || die "The signed-in GitHub CLI account ($(gh api user --jq .login)) needs admin rights on $REPO."

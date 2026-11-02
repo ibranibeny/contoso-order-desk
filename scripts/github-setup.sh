@@ -63,13 +63,13 @@ fi
 confirm "This changes repository settings, security features, the production environment and the main branch. Continue?"
 
 # --------------------------------------------------------------------------------------------
-step "1/9 Repository settings: squash merge only, delete branches after merge"
+step "1/10 Repository settings: squash merge only, delete branches after merge"
 gh repo edit "$REPO" --enable-issues --enable-squash-merge --enable-merge-commit=false \
   --enable-rebase-merge=false --delete-branch-on-merge >/dev/null
 ok "Pull requests merge with squash; merged branches are deleted"
 
 # --------------------------------------------------------------------------------------------
-step "2/9 Write access for the approver"
+step "2/10 Write access for the approver"
 if [ -n "$SOLO" ]; then
   ok "One account: nobody to invite"
 elif gh api "repos/$REPO/collaborators/$APPROVER" --silent >/dev/null 2>&1; then
@@ -81,7 +81,7 @@ else
 fi
 
 # --------------------------------------------------------------------------------------------
-step "3/9 Labels and project"
+step "3/10 Labels and project"
 gh label create enhancement --color a2eeef --description "New feature or request" --force -R "$REPO" >/dev/null
 ok "Label 'enhancement' (used by the feature request form)"
 
@@ -111,7 +111,7 @@ else
 fi
 
 # --------------------------------------------------------------------------------------------
-step "4/9 Code owners, the feature request form and the demo data"
+step "4/10 Code owners, the feature request form and the demo data"
 CODE_OWNER=${CODEOWNERS_TEAM:-@$APPROVER}
 if [ -n "$SOLO" ]; then
   OWNERS_RULE='# One account: pull requests need no approving review; checks, CodeQL, Copilot code review and resolved conversations gate the merge (see the "Protect main" ruleset).'
@@ -132,6 +132,7 @@ FORM=$FORM ISSUE_TYPE=${ISSUE_TYPE:-} PROJECT_REF=$PROJECT_REF node -e '
   if (process.env.ISSUE_TYPE) text = text.replace(/^#?[ \t]*type:[ \t].*$/m, "type: " + process.env.ISSUE_TYPE);
   if (process.env.PROJECT_REF) text = text.replace(/^#?[ \t]*projects:[ \t].*$/m, "projects: [\"" + process.env.PROJECT_REF + "\"]");
   fs.writeFileSync(process.env.FORM, text);'
+ensure_git_identity
 git add .github/CODEOWNERS "$FORM"
 if [ -n "${DEMO_DATE:-}" ]; then
   node scripts/seed-orders.mjs --date "$DEMO_DATE" >/dev/null || die "DEMO_DATE must look like 2026-11-20."
@@ -148,7 +149,7 @@ else
 fi
 
 # --------------------------------------------------------------------------------------------
-step "5/9 Security features"
+step "5/10 Security features"
 gh api -X PUT "repos/$REPO/vulnerability-alerts" --silent && ok "Dependabot alerts" || warn "Could not turn on Dependabot alerts"
 gh api -X PUT "repos/$REPO/automated-security-fixes" --silent && ok "Dependabot security updates" || warn "Could not turn on Dependabot security updates"
 if [ "$VISIBILITY" != "public" ]; then
@@ -166,7 +167,7 @@ gh api -X PATCH "repos/$REPO/code-scanning/default-setup" -f state=configured -f
   || warn "Could not turn on CodeQL default setup (Settings > Advanced Security > Code scanning > Default setup)."
 
 # --------------------------------------------------------------------------------------------
-step "6/9 Environment 'production': approval by @$APPROVER, main branch only"
+step "6/10 Environment 'production': approval by @$APPROVER, main branch only"
 # Prevent self-review stops whoever triggered a run from approving its deployment: with one account that is you, so it is off.
 if [ -n "$SOLO" ]; then SELF_REVIEW=false; else SELF_REVIEW=true; fi
 ENV_BODY=$(printf '{"wait_timer":0,"prevent_self_review":%s,"reviewers":[{"type":"User","id":%s}],"deployment_branch_policy":{"protected_branches":false,"custom_branch_policies":true}}' "$SELF_REVIEW" "$APPROVER_ID")
@@ -188,7 +189,7 @@ else
 fi
 
 # --------------------------------------------------------------------------------------------
-step "7/9 Ruleset 'Protect main'"
+step "7/10 Ruleset 'Protect main'"
 if [ "${SKIP_RULESET:-0}" = "1" ]; then
   info "Skipped (SKIP_RULESET=1)"
 else
@@ -231,13 +232,48 @@ else
 fi
 
 # --------------------------------------------------------------------------------------------
-step "8/9 Copilot setup steps"
+step "8/10 Copilot setup steps"
 gh workflow run copilot-setup-steps.yml -R "$REPO" --ref main >/dev/null 2>&1 \
   && ok "Started 'Copilot Setup Steps' once to check the cloud agent's environment (see the Actions tab)" \
   || warn "Could not start 'Copilot Setup Steps'. Run it from the Actions tab."
 
 # --------------------------------------------------------------------------------------------
-step "9/9 Tag the clean starting point"
+step "9/10 Fallback branches on top of main"
+# GitHub Docs: branches of a repository created from a template have unrelated histories, so no pull request can be
+# opened from them to main. Each fallback branch is rebuilt here as main plus that branch's app code (src/, public/ and
+# test/), so its pull request shows only the feature. A branch missing here (the template was used without "Include all
+# branches") is taken from the template repository. A branch already on top of main is left as it is.
+TEMPLATE=$(gh api "repos/$REPO" --jq '.template_repository.full_name // empty' 2>/dev/null || true)
+git fetch -q origin main
+for b in fallback/order-lookup-api fallback/agent-lookup-page solution; do
+  case "$b" in
+    fallback/order-lookup-api) MSG="Fallback: order lookup API (GET /api/orders/:orderId) with tests" ;;
+    fallback/agent-lookup-page) MSG="Fallback: agent order lookup page with tests" ;;
+    *) MSG="Solution: main after the demo (order lookup API and agent page)" ;;
+  esac
+  if git fetch -q origin "+refs/heads/$b:refs/remotes/origin/$b" 2>/dev/null; then
+    SRC=refs/remotes/origin/$b
+    if git merge-base --is-ancestor origin/main "$SRC" 2>/dev/null; then ok "$b is already on top of main"; continue; fi
+  elif [ -n "$TEMPLATE" ] && git fetch -q "https://github.com/$TEMPLATE.git" "+refs/heads/$b:refs/template/$b" 2>/dev/null; then
+    SRC=refs/template/$b
+  else
+    warn "$b was not found in $REPO${TEMPLATE:+ or in $TEMPLATE}: that fallback is not available"; continue
+  fi
+  INDEX="$(git rev-parse --absolute-git-dir)/fallback.index"
+  rm -f "$INDEX"
+  GIT_INDEX_FILE=$INDEX git read-tree origin/main
+  GIT_INDEX_FILE=$INDEX git rm -r -q --cached --ignore-unmatch -- src public test
+  git ls-tree -r "$SRC" -- src public test | GIT_INDEX_FILE=$INDEX git update-index --index-info
+  TREE=$(GIT_INDEX_FILE=$INDEX git write-tree)
+  rm -f "$INDEX"
+  if [ "$TREE" = "$(git rev-parse 'origin/main^{tree}')" ]; then warn "$b has no app changes compared with main: left as it is"; continue; fi
+  COMMIT=$(git commit-tree "$TREE" -p origin/main -m "$MSG")
+  git push -q -f origin "$COMMIT:refs/heads/$b"
+  ok "$b rebuilt on top of main:$(git diff --shortstat origin/main "$COMMIT")"
+done
+
+# --------------------------------------------------------------------------------------------
+step "10/10 Tag the clean starting point"
 git fetch -q origin main
 git tag -f demo-start origin/main >/dev/null
 git push -q -f origin refs/tags/demo-start

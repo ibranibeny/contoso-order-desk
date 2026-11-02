@@ -40,8 +40,12 @@ elif [ "$START" = "$MAIN" ]; then ok "main is at demo-start (${START:0:7})"
 else warn "main (${MAIN:0:7}) is not at demo-start (${START:0:7}) -> scripts/reset-demo.sh if this is not intended"; fi
 
 for b in fallback/order-lookup-api fallback/agent-lookup-page solution; do
-  gh api "repos/$REPO/branches/$b" --silent >/dev/null 2>&1 && ok "Branch $b" \
-    || bad "Branch $b missing -> create the repository with 'Include all branches', or push it from the template"
+  if ! gh api "repos/$REPO/branches/$b" --silent >/dev/null 2>&1; then
+    bad "Branch $b missing -> scripts/github-setup.sh takes it from the template and puts it on top of main"
+  elif [ -z "$(gh api "repos/$REPO/compare/main...$b" --jq .status 2>/dev/null)" ]; then
+    # A repository created from a template starts every branch with its own first commit (unrelated histories).
+    bad "Branch $b has no history in common with main, so no pull request can be opened from it -> scripts/github-setup.sh rebuilds it on top of main"
+  else ok "Branch $b"; fi
 done
 OPEN_ISSUES=$(gh issue list -R "$REPO" --state open --json number --jq 'length')
 [ "$OPEN_ISSUES" = "0" ] && ok "No open issues (the demo creates them)" || warn "$OPEN_ISSUES open issue(s) -> close rehearsal issues (scripts/reset-demo.sh)"
