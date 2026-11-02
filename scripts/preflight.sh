@@ -220,7 +220,7 @@ else
       IFS=$'\037' read -r PLAN_NAME PLAN_SKU <<< "$PLAN_ROW"
       ok "Web app $APP · resource group $RG · $LOC · plan ${PLAN_NAME:-?} (${PLAN_SKU:-?}) · subscription $SUB_NAME"
       case "$PLAN_SKU" in
-        F1|FREE|D1|SHARED) warn "Plan ${PLAN_NAME:-?} is on the $PLAN_SKU tier: no Always On, so the first request after about 20 idle minutes is slow (Free also allows 60 CPU minutes a day) -> SKU=B1 scripts/azure-setup.sh before the session" ;;
+        F1|FREE|D1|SHARED) warn "Plan ${PLAN_NAME:-?} is on the $PLAN_SKU tier: no Always On, so the first request after about 20 idle minutes is slow (Free also allows 60 CPU minutes a day) -> before the session: az appservice plan update --subscription \"$SUB\" -g $RG -n ${PLAN_NAME:-?} --sku B1 && az webapp config set --subscription \"$SUB\" -g $RG -n $APP --always-on true" ;;
       esac
 
       if ! CFG=$(azf webapp config show "${AZA[@]}" --query "[[linuxFxVersion, minTlsVersion, ftpsState, healthCheckPath]]"); then

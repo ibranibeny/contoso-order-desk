@@ -78,7 +78,12 @@ step "1/6 Resource group and App Service plan"
 az group create -n "$RG" -l "$LOCATION" --tags workload=contoso-order-desk purpose=demo -o none
 ok "Resource group $RG"
 if [ -n "$PLAN_SKU" ] && [ "$PLAN_SKU" != "$SKU" ]; then
-  az appservice plan update -g "$RG" -n "$PLAN" --sku "$SKU" -o none
+  # Azure refuses to move a plan to Free or Shared while an app on it has Always On: turn it off on this app first.
+  if [ "$ALWAYS_ON" = false ] && az webapp show -g "$RG" -n "$APP" -o none 2>/dev/null; then
+    az webapp config set -g "$RG" -n "$APP" --always-on false -o none
+  fi
+  az appservice plan update -g "$RG" -n "$PLAN" --sku "$SKU" -o none \
+    || die "Could not scale plan $PLAN from $PLAN_SKU to $SKU. On Free or Shared every app on the plan must have Always On off: az webapp list -g $RG -o table"
   ok "App Service plan $PLAN scaled from $PLAN_SKU to $SKU"
 elif [ -n "$PLAN_SKU" ]; then
   ok "App Service plan $PLAN (exists, $SKU)"
@@ -106,7 +111,7 @@ if [ "$ALWAYS_ON" = true ]; then
   ok "HTTPS only, TLS 1.2+, FTP off, Always On, health check /health"
 else
   ok "HTTPS only, TLS 1.2+, FTP off, health check /health"
-  warn "No Always On on the $SKU tier: the first request after about 20 idle minutes is slow. For the live session: SKU=B1 scripts/azure-setup.sh"
+  warn "No Always On on the $SKU tier: the first request after about 20 idle minutes is slow. For the live session: RG=$RG PLAN=$PLAN APP=$APP SKU=B1 scripts/azure-setup.sh"
 fi
 for policy in scm ftp; do
   az resource update -g "$RG" --namespace Microsoft.Web --resource-type basicPublishingCredentialsPolicies \
