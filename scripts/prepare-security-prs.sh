@@ -64,7 +64,7 @@ step "2/2 demo/add-date-helper (dependency review)"
 (
   cd "$WORK"
   git switch -q -C demo/add-date-helper origin/main
-  npm install --no-audit --no-fund --save-exact lodash@4.17.15 >/dev/null
+  npm install --no-audit --no-fund --update-notifier=false --save-exact lodash@4.17.15 >/dev/null
   cat > src/date-helper.js <<'JS'
 // Demo branch demo/add-date-helper: adds a package version with published security advisories
 // so the dependency review check can block it. Never merge it.

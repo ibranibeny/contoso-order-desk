@@ -150,8 +150,10 @@ fi
 
 # --------------------------------------------------------------------------------------------
 step "5/10 Security features"
-gh api -X PUT "repos/$REPO/vulnerability-alerts" --silent && ok "Dependabot alerts" || warn "Could not turn on Dependabot alerts"
-gh api -X PUT "repos/$REPO/automated-security-fixes" --silent && ok "Dependabot security updates" || warn "Could not turn on Dependabot security updates"
+# A repository created a minute ago can answer 422 here until GitHub has finished setting it up: try for a minute.
+retry() { local i; for i in 1 2 3 4 5 6; do "$@" 2>/dev/null && return 0; [ "$i" = 6 ] || sleep 10; done; return 1; }
+retry gh api -X PUT "repos/$REPO/vulnerability-alerts" --silent && ok "Dependabot alerts" || warn "Could not turn on Dependabot alerts"
+retry gh api -X PUT "repos/$REPO/automated-security-fixes" --silent && ok "Dependabot security updates" || warn "Could not turn on Dependabot security updates"
 if [ "$VISIBILITY" != "public" ]; then
   echo '{"security_and_analysis":{"advanced_security":{"status":"enabled"}}}' \
     | gh api -X PATCH "repos/$REPO" --input - --silent 2>/dev/null \

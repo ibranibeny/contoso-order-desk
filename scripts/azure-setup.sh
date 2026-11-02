@@ -18,7 +18,8 @@
 #
 # Optional settings (environment variables), with defaults:
 #   REPO=<owner/name of the clone>  LOCATION=southeastasia  RG=rg-contoso-order-desk  PLAN=asp-contoso-order-desk
-#   APP=<unique name, reused on reruns>  SKU=B1  RUNTIME=NODE:24-lts  IDENTITY=id-github-order-desk
+#   APP=<unique name, reused on reruns>  SKU=B1 (an existing plan keeps its tier unless SKU is set)
+#   RUNTIME=NODE:24-lts  IDENTITY=id-github-order-desk
 #   SUBJECT_FORMAT=auto|immutable|legacy   APPINSIGHTS=1   DEPLOY=1 (start the first deployment at the end)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -33,6 +34,7 @@ resolve_repo
 require_admin
 az account show -o none 2>/dev/null || die "Sign in to Azure first: az login"
 
+SKU_SET=${SKU:+1}     # SKU given on the command line: an existing plan is scaled to it
 LOCATION=${LOCATION:-southeastasia}
 RG=${RG:-rg-contoso-order-desk}
 PLAN=${PLAN:-asp-contoso-order-desk}
@@ -56,17 +58,35 @@ gh api "repos/$REPO/environments/production" --silent 2>/dev/null \
 REVIEWERS=$(gh api "repos/$REPO/environments/production" --jq '[.protection_rules[]? | select(.type == "required_reviewers")] | length')
 [ "$REVIEWERS" != "0" ] || warn "The 'production' environment has no required reviewer, so deployments will not wait for approval. Fix it with scripts/github-setup.sh or in Settings > Environments."
 
+# An existing plan keeps its tier (someone may have scaled it down to save money) unless SKU is given.
+PLAN_SKU=$(az appservice plan show -g "$RG" -n "$PLAN" --query sku.name -o tsv 2>/dev/null || true)
+[ -z "$PLAN_SKU" ] || [ -n "$SKU_SET" ] || SKU=$PLAN_SKU
+case "$SKU" in
+  F1|FREE|D1|SHARED) ALWAYS_ON=false; COST="the $SKU tier has no Always On, so the app sleeps when idle" ;;
+  *) ALWAYS_ON=true; COST="an App Service plan $SKU has an hourly cost until you delete it" ;;
+esac
+
 step "Deploying the Order Desk demo for $REPO"
 info "Subscription $(az account show --query name -o tsv) ($SUB_ID)"
-info "Resource group $RG in $LOCATION; web app $APP; plan $PLAN ($SKU)"
-confirm "Create or update these Azure resources (an App Service plan $SKU has an hourly cost until you delete it)?"
+if [ -n "$PLAN_SKU" ] && [ "$PLAN_SKU" != "$SKU" ]; then PLAN_NOTE="exists as $PLAN_SKU, will be scaled to $SKU"
+elif [ -n "$PLAN_SKU" ]; then PLAN_NOTE="exists, $SKU"; else PLAN_NOTE="new, $SKU"; fi
+info "Resource group $RG in $LOCATION; web app $APP; plan $PLAN ($PLAN_NOTE)"
+confirm "Create or update these Azure resources ($COST)?"
 
 # --------------------------------------------------------------------------------------------
 step "1/6 Resource group and App Service plan"
 az group create -n "$RG" -l "$LOCATION" --tags workload=contoso-order-desk purpose=demo -o none
 ok "Resource group $RG"
-if az appservice plan show -g "$RG" -n "$PLAN" -o none 2>/dev/null; then
-  ok "App Service plan $PLAN (exists)"
+if [ -n "$PLAN_SKU" ] && [ "$PLAN_SKU" != "$SKU" ]; then
+  # Azure refuses to move a plan to Free or Shared while an app on it has Always On: turn it off on this app first.
+  if [ "$ALWAYS_ON" = false ] && az webapp show -g "$RG" -n "$APP" -o none 2>/dev/null; then
+    az webapp config set -g "$RG" -n "$APP" --always-on false -o none
+  fi
+  az appservice plan update -g "$RG" -n "$PLAN" --sku "$SKU" -o none \
+    || die "Could not scale plan $PLAN from $PLAN_SKU to $SKU. On Free or Shared every app on the plan must have Always On off: az webapp list -g $RG -o table"
+  ok "App Service plan $PLAN scaled from $PLAN_SKU to $SKU"
+elif [ -n "$PLAN_SKU" ]; then
+  ok "App Service plan $PLAN (exists, $SKU)"
 else
   az appservice plan create -g "$RG" -n "$PLAN" --is-linux --sku "$SKU" -o none
   ok "App Service plan $PLAN (Linux, $SKU)"
@@ -84,9 +104,15 @@ else
   ok "Web app created (NODE:22-lts; the app runs on Node.js 22 as well)"
 fi
 az webapp update -g "$RG" -n "$APP" --https-only true -o none
-az webapp config set -g "$RG" -n "$APP" --always-on true --ftps-state Disabled --min-tls-version 1.2 \
+# Always On is not available on the Free and Shared tiers: App Service refuses the whole update (409 Conflict).
+az webapp config set -g "$RG" -n "$APP" --always-on "$ALWAYS_ON" --ftps-state Disabled --min-tls-version 1.2 \
   --http20-enabled true --generic-configurations '{"healthCheckPath": "/health"}' -o none
-ok "HTTPS only, TLS 1.2+, FTP off, Always On, health check /health"
+if [ "$ALWAYS_ON" = true ]; then
+  ok "HTTPS only, TLS 1.2+, FTP off, Always On, health check /health"
+else
+  ok "HTTPS only, TLS 1.2+, FTP off, health check /health"
+  warn "No Always On on the $SKU tier: the first request after about 20 idle minutes is slow. For the live session: RG=$RG PLAN=$PLAN APP=$APP SKU=B1 scripts/azure-setup.sh"
+fi
 for policy in scm ftp; do
   az resource update -g "$RG" --namespace Microsoft.Web --resource-type basicPublishingCredentialsPolicies \
     --parent "sites/$APP" -n "$policy" --set properties.allow=false -o none
