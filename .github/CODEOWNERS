@@ -1,5 +1,5 @@
-# Code owners for Contoso Order Desk (written by scripts/github-setup.sh).
-# One account: pull requests need no approving review; checks, CodeQL, Copilot code review and resolved conversations gate the merge (see the "Protect main" ruleset).
-*                     @ibranibeny/order-desk-maintainers
-/.github/             @ibranibeny/order-desk-maintainers
-/.github/CODEOWNERS   @ibranibeny/order-desk-maintainers
+# Code owners for Contoso Order Desk.
+# scripts/github-setup.sh rewrites this file in each demo repository: you (one account), the approver, or a team.
+*                     @ibranibeny
+/.github/             @ibranibeny
+/.github/CODEOWNERS   @ibranibeny

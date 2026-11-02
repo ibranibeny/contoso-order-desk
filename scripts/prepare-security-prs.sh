@@ -16,6 +16,7 @@ cd "$(dirname "$0")/.."
 source scripts/lib.sh
 need gh; need git; need npm
 resolve_repo
+ensure_git_identity
 
 WORK=$(mktemp -d)
 cleanup() { git worktree remove --force "$WORK" >/dev/null 2>&1 || true; rm -rf "$WORK"; }
