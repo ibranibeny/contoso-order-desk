@@ -42,8 +42,9 @@ else warn "main (${MAIN:0:7}) is not at demo-start (${START:0:7}) -> scripts/res
 for b in fallback/order-lookup-api fallback/agent-lookup-page solution; do
   if ! gh api "repos/$REPO/branches/$b" --silent >/dev/null 2>&1; then
     bad "Branch $b missing -> scripts/github-setup.sh takes it from the template and puts it on top of main"
-  elif [ -z "$(gh api "repos/$REPO/compare/main...$b" --jq .status 2>/dev/null)" ]; then
-    # A repository created from a template starts every branch with its own first commit (unrelated histories).
+  elif ! gh api "repos/$REPO/compare/main...$b" --silent >/dev/null 2>&1; then
+    # A repository created from a template starts every branch with its own first commit (unrelated histories): the
+    # compare API answers 404 "No common ancestor", and gh api exits with an error.
     bad "Branch $b has no history in common with main, so no pull request can be opened from it -> scripts/github-setup.sh rebuilds it on top of main"
   else ok "Branch $b"; fi
 done
