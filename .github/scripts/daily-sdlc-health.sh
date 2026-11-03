@@ -25,10 +25,9 @@ self=daily-sdlc-health # this workflow's own runs are never findings
 
 # Status of each source: ok, not_enabled, not_checked or unavailable.
 declare -A status=([build]=ok [code_review]=ok [code_scanning]=ok [dependabot]=ok [secret_scanning]=ok [tracking]=ok)
-for f in prs code_scanning analyses dependabot secret_scanning pending_waiting pending_action_required; do
+for f in prs code_scanning analyses dependabot secret_scanning pending_waiting pending_action_required open_issues closed_issues; do
   echo '[]' > "$raw/$f.json"
 done
-echo '{}' > "$raw/issues.json"
 : > "$raw/build_runs.ndjson"
 : > "$raw/failing_details.ndjson"
 
@@ -62,15 +61,17 @@ excerpt() {
   fi | sed -E 's/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:.]+Z //; s/\x1b\[[0-9;]*[A-Za-z]//g' | cut -c1-300
 }
 
-# --- Build: recent completed runs, on the default branch, of every workflow that still exists.
-since=$(iso $((now - 30 * 86400)))
+# --- Build: the latest completed runs, on the default branch, of every workflow that still exists.
 if fetch workflow_files '.[] | {path}' -X GET "repos/$repo/contents/.github/workflows" -f ref="$branch" &&
   fetch workflows '.workflows[] | select(.state == "active") | {id, name, path}' -X GET "repos/$repo/actions/workflows" -f per_page=100; then
   while read -r wf; do
     id=$(jq -r .id <<< "$wf")
-    if fetch "runs_$id" '.workflow_runs[] | {id, event, conclusion, created_at, url: .html_url}' \
-      -X GET "repos/$repo/actions/workflows/$id/runs" -f branch="$branch" -f status=completed -f created=">=$since" -f per_page=20; then
-      jq -c --argjson wf "$wf" '{workflow: $wf.name, path: $wf.path, runs: .}' "$raw/runs_$id.json" >> "$raw/build_runs.ndjson"
+    if fetch "runs_$id" '.workflow_runs[] | {id, event, conclusion, created_at, url: .html_url, head_repository: .head_repository.full_name}' \
+      -X GET "repos/$repo/actions/workflows/$id/runs" -f branch="$branch" -f status=completed -f per_page=100; then
+      # The branch filter also matches pull requests whose head is a branch of that name, such as a fork's main.
+      jq -c --argjson wf "$wf" --arg repo "$repo" '{workflow: $wf.name, path: $wf.path,
+          runs: map(select(.head_repository == $repo and (.event | IN("pull_request", "pull_request_target") | not))
+            | del(.head_repository))}' "$raw/runs_$id.json" >> "$raw/build_runs.ndjson"
     else
       status[build]=unavailable
     fi
@@ -148,7 +149,8 @@ fetch code_scanning '.[] | {number, rule: .rule.id, description: .rule.descripti
     message: .most_recent_instance.message.text, created_at, url: .html_url}' \
   --paginate -X GET "repos/$repo/code-scanning/alerts" -f state=open -f per_page=100 || failed code_scanning code_scanning
 if [ "${status[code_scanning]}" = ok ]; then
-  fetch analyses '.[] | {category, created_at}' -X GET "repos/$repo/code-scanning/analyses" -f ref="refs/heads/$branch" -f per_page=20 || true
+  fetch analyses '.[] | {category, created_at}' -X GET "repos/$repo/code-scanning/analyses" -f ref="refs/heads/$branch" -f per_page=20 ||
+    failed code_scanning analyses
 fi
 fetch dependabot '.[] | {number, package: .dependency.package.name, ecosystem: .dependency.package.ecosystem, manifest: .dependency.manifest_path,
     severity: .security_advisory.severity, ghsa: .security_advisory.ghsa_id, cve: .security_advisory.cve_id, summary: .security_advisory.summary,
@@ -166,25 +168,30 @@ else
 fi
 
 # --- Issues this workflow raised before. A fix issue's body ends with "Finding key: `<key>`".
-# shellcheck disable=SC2016 # $owner and $name are GraphQL variables
-issue_query='query($owner: String!, $name: String!) {
+# All open ones, page by page: without them a problem could be raised twice, so a failed read stops new fix issues.
+# shellcheck disable=SC2016 # $owner, $name, $endCursor and $q are GraphQL variables
+open_query='query($owner: String!, $name: String!, $endCursor: String) {
   repository(owner: $owner, name: $name) {
-    open: issues(states: OPEN, labels: ["agentic-sdlc"], first: 100) { nodes { ...item } }
-    closed: issues(states: CLOSED, labels: ["agentic-sdlc"], first: 50, orderBy: {field: UPDATED_AT, direction: DESC}) {
-      nodes { ...item closedAt }
+    issues(states: OPEN, labels: ["agentic-sdlc"], first: 100, after: $endCursor) {
+      pageInfo { hasNextPage endCursor }
+      nodes {
+        number title url body
+        labels(first: 20) { nodes { name } }
+        closedByPullRequestsReferences(first: 5, includeClosedPrs: false) { nodes { number url isDraft author { login } } }
+      }
     }
   }
-}
-fragment item on Issue {
-  number title url body
-  labels(first: 20) { nodes { name } }
-  closedByPullRequestsReferences(first: 5, includeClosedPrs: false) { nodes { number url isDraft author { login } } }
 }'
-if ! gh api graphql -f query="$issue_query" -f owner="${repo%/*}" -f name="${repo#*/}" > "$raw/issues.json" 2> "$raw/issues.err"; then
+fetch open_issues '.data.repository.issues.nodes[]' graphql --paginate -f query="$open_query" -f owner="${repo%/*}" -f name="${repo#*/}" || {
   status[tracking]=unavailable
-  echo '{}' > "$raw/issues.json"
-  echo "::warning::tracking: $(tr '\n' ' ' < "$raw/issues.err" | cut -c1-300)"
-fi
+  echo "::warning::tracking: $(tr '\n' ' ' < "$raw/open_issues.err" | cut -c1-300)"
+}
+# The latest closed fix issues, without the daily reports, to link a problem that comes back to its earlier issue.
+# shellcheck disable=SC2016
+closed_query='query($q: String!) { search(query: $q, type: ISSUE, first: 100) { nodes { ... on Issue { number url body closedAt } } } }'
+fetch closed_issues '.data.search.nodes[]' graphql -f query="$closed_query" \
+  -f q="repo:$repo is:issue is:closed label:agentic-sdlc -label:report sort:updated-desc" ||
+  echo "::warning::closed fix issues: $(tr '\n' ' ' < "$raw/closed_issues.err" | cut -c1-300)"
 
 # --- Findings, tracking and what to close.
 status_json=$(for k in "${!status[@]}"; do printf '%s\t%s\n' "$k" "${status[$k]}"; done |
@@ -194,7 +201,8 @@ jq -n --arg branch "$branch" --arg base "$server/$repo" --arg self "$self" --arg
   --slurpfile failing "$raw/failing_details.json" --slurpfile waiting "$raw/pending_waiting.json" \
   --slurpfile action_required "$raw/pending_action_required.json" --slurpfile prs "$raw/prs.json" \
   --slurpfile cs "$raw/code_scanning.json" --slurpfile analyses "$raw/analyses.json" --slurpfile dep "$raw/dependabot.json" \
-  --slurpfile ss "$raw/secret_scanning.json" --slurpfile issues "$raw/issues.json" '
+  --slurpfile ss "$raw/secret_scanning.json" --slurpfile open_issues "$raw/open_issues.json" \
+  --slurpfile closed_issues "$raw/closed_issues.json" '
   def hours(t): ($now - (t | fromdateiso8601)) / 3600 | floor;
   def days(t): ($now - (t | fromdateiso8601)) / 86400 | floor;
   def rank: {"critical": 0, "high": 1, "error": 1, "medium": 2, "moderate": 2, "warning": 2, "low": 3, "note": 3}[.] // 4;
@@ -204,10 +212,9 @@ jq -n --arg branch "$branch" --arg base "$server/$repo" --arg self "$self" --arg
   def source_of: if startswith("build/") then "build" elif startswith("code-scanning/") then "code_scanning"
     elif startswith("dependabot/") then "dependabot" elif startswith("secret-scanning/") then "secret_scanning" else null end;
 
-  ($issues[0].data.repository // {}) as $tracked
-  | [($tracked.open.nodes // [])[] | {number, url, title, key: key_of, labels: [.labels.nodes[].name],
+  [$open_issues[0][] | {number, url, title, key: key_of, labels: [.labels.nodes[].name],
       fix_prs: [.closedByPullRequestsReferences.nodes[] | {number, url, draft: .isDraft, author: (.author.login // null)}]}] as $open
-  | [($tracked.closed.nodes // [])[] | {number, url, key: key_of, closed_at: .closedAt}] as $closed
+  | [$closed_issues[0][] | {number, url, key: key_of, closed_at: .closedAt}] as $closed
   | $prs[0] as $pulls
   | [
       ($failing[0][] | {
