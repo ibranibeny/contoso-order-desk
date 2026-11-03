@@ -48,7 +48,8 @@ for b in fallback/order-lookup-api fallback/agent-lookup-page solution; do
     bad "Branch $b has no history in common with main, so no pull request can be opened from it -> scripts/github-setup.sh rebuilds it on top of main"
   else ok "Branch $b"; fi
 done
-OPEN_ISSUES=$(gh issue list -R "$REPO" --state open --json number --jq 'length')
+# Daily activity reports (label "report") may stay open: the next report, or its 7-day expiry, closes them.
+OPEN_ISSUES=$(gh issue list -R "$REPO" --state open --json number,labels --jq '[.[] | select([.labels[].name] | index("report") | not)] | length')
 [ "$OPEN_ISSUES" = "0" ] && ok "No open issues (the demo creates them)" || warn "$OPEN_ISSUES open issue(s) -> close rehearsal issues (scripts/reset-demo.sh)"
 
 step "Rules, security and environment"
