@@ -256,9 +256,10 @@ jq -n --arg branch "$branch" --arg base "$server/$repo" --arg self "$self" --arg
         url, details: .}),
 
       (($analyses[0] | map(.created_at) | max) as $last
-        | select($status.code_scanning == "ok" and $last != null and days($last) >= 8) | {
+        | select($status.code_scanning == "ok" and (if $last == null then true else days($last) >= 8 end)) | {
         key: "code-scanning-stale", area: "security", severity: "medium", fix_issue: false,
-        summary: "Code scanning last analysed \($branch) \(days($last)) days ago",
+        summary: (if $last == null then "Code scanning has no analysis of \($branch)"
+          else "Code scanning last analysed \($branch) \(days($last)) days ago" end),
         url: "\($base)/security/code-scanning", details: {last_analysis: $last}}),
 
       ($dep[0] | group_by([.ecosystem, .package, .manifest])[] | sort_by(.severity | rank) | .[0] as $top | {
