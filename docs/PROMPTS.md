@@ -137,3 +137,28 @@ Record every order lookup for audit: who looked up which order, when, and the re
 | `100232` | The page accepts the six digits alone and fills in `ORD-` |
 
 Dates are relative to the demo day the data was generated for (3 November 2026 by default). To make "today" match your demo, run `DEMO_DATE=YYYY-MM-DD scripts/github-setup.sh` (add `APPROVER=<approver>` if a second person approves) a few days before: it regenerates `data/orders.json` for that day, commits it to main, and moves the `demo-start` tag. Then redeploy (Actions → CI/CD → Run workflow).
+
+## 8. Agentic workflows
+
+Where: GitHub Copilot CLI, or agent mode in VS Code, with the `agentic-workflows` skill (`gh aw init` adds it to a repository). Copilot asks a few questions, writes the workflow, compiles it with `gh aw compile` and opens a pull request. This repository already contains both results; see [Agentic SDLC](../README.md#agentic-sdlc) for what they do and the secrets they need.
+
+The daily activity report:
+
+```text
+/agentic-workflows Create a new workflow that creates a daily report on recent activity in the repository,
+delivered as an issue.
+```
+
+The daily SDLC health check, the operate stage of the agentic SDLC:
+
+```text
+/agentic-workflows Create a new workflow that runs every day and checks what needs fixing in this repository:
+builds on main (the latest run of every workflow, and runs waiting for an approval), code reviews (open pull
+requests with unresolved review threads, changes requested, failing checks, conflicts, or waiting more than a
+day for a review) and GitHub Advanced Security (open code scanning, Dependabot and secret scanning alerts).
+When something needs fixing, raise one daily report issue and one Copilot-ready issue per new problem on main,
+with the evidence, a suggested fix and when it counts as done. Never raise the same problem twice, close a fix
+issue once its problem is gone, never put a secret value in an issue, and write nothing when all is healthy.
+```
+
+Then close the loop: open a fix issue and select **Assignees → Copilot**.
