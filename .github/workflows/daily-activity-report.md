@@ -62,7 +62,7 @@ steps:
       fetch items '.[] | {number, kind: (if .pull_request then "pull_request" else "issue" end), title, author: .user.login, state, state_reason, draft: (.draft // false), labels: [.labels[].name], comments, created_at, closed_at, merged_at: .pull_request.merged_at, updated_at, url: .html_url}' \
         --paginate "repos/$REPO/issues" -f state=all -f since="$start" -f per_page=100
       fetch releases '.[] | select(.draft | not) | {name, tag: .tag_name, prerelease, published_at, author: .author.login, url: .html_url}' \
-        "repos/$REPO/releases" -f per_page=20
+        --paginate "repos/$REPO/releases" -f per_page=100
       fetch runs '.workflow_runs[] | {id, workflow: .name, path, event, branch: .head_branch, status, conclusion, created_at, url: .html_url}' \
         --paginate "repos/$REPO/actions/runs" -f created=">=$start" -f per_page=100
       fetch open_issues '.[] | select(.pull_request | not) | {number, title}' \
@@ -111,7 +111,7 @@ steps:
               total: ($runs[0] | length),
               failed: ($failed | length),
               failed_on_default_branch: ($failed | count(.branch == $branch)),
-              awaiting_approval: ($runs[0] | count(.conclusion == "action_required"))
+              awaiting_approval: ($runs[0] | count(.conclusion == "action_required" or .status == "waiting"))
             },
             open_now: {
               issues: ($open_issues[0] | length),
@@ -166,7 +166,7 @@ Title: `Repository activity for <YYYY-MM-DD of window.end>`. The `[daily-activit
 Body, in this order. Leave out any section with nothing to show.
 
 1. `### Summary`: one or two sentences on the day, then bullets with the counts that are not zero. If `unavailable` is not empty, add a `> [!WARNING]` alert naming the sources that could not be read.
-2. `### Needs attention`: failed runs on the default branch, runs awaiting approval, and open non-draft pull requests awaiting review (oldest first, at most 5). Start with a `> [!WARNING]` alert when a run on the default branch failed.
+2. `### Needs attention`: failed runs on the default branch, runs awaiting approval (`conclusion` `action_required`, or `status` `waiting`, such as a deployment waiting for environment approval), and open non-draft pull requests awaiting review (oldest first, at most 5). Start with a `> [!WARNING]` alert when a run on the default branch failed.
 3. `### Pull requests`: merged, opened, closed without merge, then other updated pull requests.
 4. `### Issues`: opened, closed (write "not planned" when `state_reason` is `not_planned`), then other updated issues.
 5. `### Commits to <default branch>`: short SHA, title and author, one line each.
